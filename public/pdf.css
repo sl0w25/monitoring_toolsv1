@@ -1,0 +1,36 @@
+.container {
+    display: grid;
+    column-gap: 50px;
+    grid-template-columns: auto auto auto;
+    padding: 10px;
+  }
+
+.h1 {
+    width: 50%;
+    vertical-align: left;
+    position: fixed;
+    top: 0px;
+    left: -10px;
+    font-size: 12px;
+}
+
+.h2 {
+        width: 70%;
+        vertical-align: left;
+        position: absolute;
+        top: 1px;
+        left: 65px;
+        font-size: 12px;
+}
+
+
+.container > div {
+
+    border: 0px solid black;
+    padding: 20px;
+    font-size: 30px;
+    text-align: center;
+  }
+
+
+
