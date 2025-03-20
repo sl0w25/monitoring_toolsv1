@@ -4,18 +4,119 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>QR Code Monitoring</title>
+    <title>Attendance Log Monitoring</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+    /* Parent container must be relative for absolute positioning */
+            .video-container {
+                position: relative;
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            /* Scanner Box - Now positioned relative to video */
+            .scanner-box {
+                position: absolute;
+                width: 100%;  /* Scales with video */
+                max-width: 250px;
+                height: 100%;
+                max-height: 170px;
+                border: 3px solid rgb(145, 255, 0);
+                background: rgba(255, 255, 255, 0.1);
+                box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
+                animation: pulse 2s infinite alternate ease-in-out;
+                overflow: hidden;
+            }
+
+            /* Scanner Line Animation */
+            .scanner-line {
+                position: absolute;
+                width: 100%;
+                height: 3px;
+                background: rgb(30, 255, 0);
+                top: 0;
+                left: 0;
+                animation: scan 2s infinite linear;
+            }
+
+            /* Pulsing Effect */
+            @keyframes pulse {
+                0% { transform: scale(1); }
+                100% { transform: scale(1.1); }
+            }
+
+            /* Moving Line Effect */
+            @keyframes scan {
+                0% { top: 0; }
+                100% { top: 100%; }
+            }
+
+            @media (max-width: 1724px) {
+                .scanner-box {
+                    width: 80%;
+                    max-width: 400px;
+                    height: 100%;
+                    max-height: 250px;
+                }
+            }
+
+            @media (max-width: 1133px) {
+                .scanner-box {
+                    width: 80%;
+                    max-width: 260px;
+                    height: 100%;
+                    max-height: 180px;
+                }
+            }
+
+            /* Responsive Tweaks */
+            @media (max-width: 1024px) {
+                .scanner-box {
+                    width: 80%;
+                    max-width: 400px;
+                    height: 100%;
+                    max-height: 250px;
+                }
+            }
+
+            @media (max-width: 768px) {
+                .scanner-box {
+                    width: 80%;
+                    max-width: 270px;
+                    height: 100%;
+                    max-height: 180px;
+                }
+            }
+
+            @media (max-width: 480px) {
+                .scanner-box {
+                    width: 80%;
+                    max-width: 170px;
+                    height: 100%;
+                    max-height: 100px;
+                }
+            }
+
+
+    </style>
+
 </head>
 <body class="bg-gray-700 text-gray-800 font-poppins bg-blend-multiply bg-cover bg-fixed" style="background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.4) 120%) #989898;">
     <div class="flex justify-center items-center h-[91.5vh]">
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 w-11/12 h-[90%] bg-white bg-opacity-80 p-10 rounded-2xl shadow-lg">
             <div class="col-span-1 flex flex-col items-center shadow-md rounded-lg p-6 bg-white">
                 <h5 class="text-center text-lg font-semibold mb-4">Scan your QR Code here</h5>
+                <div class="video-container">
                 <video id="interactive" class="w-full rounded-md"></video>
 
-                <div id="error-container" class="text-red-600 font-semibold hidden mt-4"></div>
-                <div id="success-container" class="text-green-600 font-semibold hidden mt-4"></div>
+                <div id="scannerBox" class="scanner-box">
+                    <div class="text-yellow-600 text-center text-lg font-semibold mb-4 flex">
+
+                    </div>
+                    <div class="scanner-line"></div>
+                </div>
                 <div class="qr-detected-container hidden mt-4">
                     <form method="POST" action="{{ route('scan.qr') }}">
                         @csrf
@@ -24,6 +125,10 @@
                     </form>
                 </div>
             </div>
+
+            <div id="error-container" class="text-red-600 font-semibold hidden mt-4 py-4"></div>
+            <div id="success-container" class="text-green-600 font-semibold hidden mt-4"></div>
+        </div>
 
             <div class="col-span-2 shadow-md rounded-lg p-6 bg-white">
                 <h4 class="text-lg font-semibold mb-6">List of Attendees (Beneficiaries)</h4>
@@ -42,7 +147,7 @@
                         <tbody id="attendanceTableBody" class="bg-white">
                             @forelse ($attendances as $attendance)
                                 <tr class="border border-gray-300">
-                                    <td class="px-2 py-1">{{ $loop->iteration }}</td>
+                                    <td class="px-2 py-1">{{ $attendances->total() - ($attendances->perPage() * ($attendances->currentPage() - 1)) - $loop->index }}</td>
                                     <td class="px-2 py-1">{{ $attendance->first_name }}</td>
                                     <td class="px-2 py-1">{{ $attendance->middle_name }}</td>
                                     <td class="px-2 py-1">{{ $attendance->last_name }}</td>
@@ -85,15 +190,21 @@
             tbody.prepend(row);
         }
 
-        function refreshTable(attendances) {
-            const tbody = document.querySelector("#attendanceTableBody");
-            tbody.innerHTML = "";
+        function refreshTable() {
+            fetch("{{ route('attendances.list') }}")
+                .then(response => response.json())
+                .then(data => {
+                    const tbody = document.querySelector("#attendanceTableBody");
+                    tbody.innerHTML = "";
+                    data.attendances.data.forEach(attendance => {
+                        addAttendanceRow(attendance);
+                    });
 
-            attendances.forEach(attendance => {
-                addAttendanceRow(attendance);
-            });
+                    // Update Pagination Links
+                    document.querySelector(".mt-4").innerHTML = data.attendances.links;
+                })
+                .catch(error => console.error("Error fetching paginated data:", error));
         }
-
         function startScanner() {
             const errorContainer = document.getElementById('error-container');
             const successContainer = document.getElementById('success-container');

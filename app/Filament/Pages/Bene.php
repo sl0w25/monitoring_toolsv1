@@ -7,6 +7,7 @@ use App\Models\FamilyHead;
 use App\Models\FamilyInfo;
 use App\Models\LocationInfo;
 use Filament\Facades\Filament;
+use Filament\Forms\Components\FileUpload;
 use Filament\Pages\Page;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
@@ -19,6 +20,7 @@ use Illuminate\Support\Str;
 use Filament\Tables\Table;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\Action;
+use Filament\Forms\Form;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class Bene extends Page implements HasForms, HasTable
@@ -31,9 +33,17 @@ class Bene extends Page implements HasForms, HasTable
 
     protected static string $view = 'filament.pages.bene';
 
+    protected static ?string $navigationLabel ='Beneficiary List';
+
     protected static ?int $navigationSort = 2;
 
     public $fam_id;
+
+
+    public function getTitle(): string
+    {
+        return 'Beneficiary List';
+    }
 
     public function table(Table $table): Table
     {

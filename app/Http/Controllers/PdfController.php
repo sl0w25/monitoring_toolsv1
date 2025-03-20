@@ -4,10 +4,17 @@ namespace App\Http\Controllers;
 
 
 use App\Models\Assistance;
+use App\Models\Aurora;
+use App\Models\Bataan;
 use App\Models\Beneficiary;
+use App\Models\Bulacan;
 use App\Models\FamilyHead;
 use App\Models\FamilyInfo;
 use App\Models\LocationInfo;
+use App\Models\Nueva;
+use App\Models\Pampanga;
+use App\Models\Tarlac;
+use App\Models\Zamb;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Crypt;
@@ -73,6 +80,7 @@ class PdfController extends Controller
     }
 
 
+
     public function generateQrNumbers()
     {
 
@@ -85,8 +93,6 @@ class PdfController extends Controller
                     $qr_number = mt_rand(1111111111, 9999999999);
                   //  $encrypted_qr = Crypt::encrypt($qr_number);
                 } while (Beneficiary::where('qr_number', $qr_number)->exists());
-
-
 
 
                 $head->qr_number = $qr_number;
@@ -154,6 +160,165 @@ class PdfController extends Controller
 
                 }
             }
+
+
+
+
+
+
+            public function insertBene()
+            {
+
+                $municipalities = Beneficiary::select('municipality')
+                    ->distinct()
+                    ->get();
+
+
+                foreach ($municipalities as $municipality) {
+
+                    $counting = Beneficiary::where('municipality', $municipality->municipality)->count();
+
+                        Aurora::where('municipality', $municipality->municipality)
+                        ->update(['bene' => $counting]);
+
+                        Bataan::where('municipality', $municipality->municipality)
+                        ->update(['bene' => $counting]);
+
+                        Bulacan::where('municipality', $municipality->municipality)
+                        ->update(['bene' => $counting]);
+
+                        Pampanga::where('municipality', $municipality->municipality)
+                        ->update(['bene' => $counting]);
+
+                        Nueva::where('municipality', $municipality->municipality)
+                        ->update(['bene' => $counting]);
+
+                        Tarlac::where('municipality', $municipality->municipality)
+                        ->update(['bene' => $counting]);
+
+                        Zamb::where('municipality', $municipality->municipality)
+                        ->update(['bene' => $counting]);
+                }
+
+                return response()->json(['message' => 'Successfully updated all municipalities']);
+            }
+
+            public function inserthired()
+            {
+
+                $municipalities = Beneficiary::select('municipality')
+                    ->distinct()
+                    ->get();
+
+              //  dd($municipalities);
+
+                foreach ($municipalities as $municipality) {
+
+                    $counting = Beneficiary::where('municipality', $municipality->municipality)->where('is_hired', 1)->count();
+
+
+                        Aurora::where('municipality', $municipality->municipality)
+                        ->update(['is_hired' => $counting]);
+
+                        Bataan::where('municipality', $municipality->municipality)
+                        ->update(['is_hired' => $counting]);
+
+                        Bulacan::where('municipality', $municipality->municipality)
+                        ->update(['is_hired' => $counting]);
+
+                        Pampanga::where('municipality', $municipality->municipality)
+                        ->update(['is_hired' => $counting]);
+
+                        Nueva::where('municipality', $municipality->municipality)
+                        ->update(['is_hired' => $counting]);
+
+                        Tarlac::where('municipality', $municipality->municipality)
+                        ->update(['is_hired' => $counting]);
+
+                        Zamb::where('municipality', $municipality->municipality)
+                        ->update(['is_hired' => $counting]);
+                }
+
+                return response()->json(['message' => 'Successfully updated all hired']);
+            }
+
+            public function insertpresent()
+            {
+
+                $municipalities = Beneficiary::select('municipality')
+                    ->distinct()
+                    ->get();
+
+              //  dd($municipalities);
+
+                foreach ($municipalities as $municipality) {
+
+                    $counting = Beneficiary::where('municipality', $municipality->municipality)->where('status', "Present")->count();
+
+                    Aurora::where('municipality', $municipality->municipality)
+                    ->update(['present' => $counting]);
+
+                    Bataan::where('municipality', $municipality->municipality)
+                    ->update(['present' => $counting]);
+
+                    Bulacan::where('municipality', $municipality->municipality)
+                    ->update(['present' => $counting]);
+
+                    Pampanga::where('municipality', $municipality->municipality)
+                    ->update(['present' => $counting]);
+
+                    Nueva::where('municipality', $municipality->municipality)
+                    ->update(['present' => $counting]);
+
+                    Tarlac::where('municipality', $municipality->municipality)
+                    ->update(['present' => $counting]);
+
+                    Zamb::where('municipality', $municipality->municipality)
+                    ->update(['present' => $counting]);
+                }
+
+                return response()->json(['message' => 'Successfully updated all present']);
+            }
+
+            public function insertabsent()
+            {
+
+                $municipalities = Beneficiary::select('municipality')
+                    ->distinct()
+                    ->get();
+
+              //  dd($municipalities);
+
+                foreach ($municipalities as $municipality) {
+
+                    $counting = Beneficiary::where('municipality', $municipality->municipality)->where('status', null)->count();
+
+
+                        Aurora::where('municipality', $municipality->municipality)
+                        ->update(['absent' => $counting]);
+
+                        Bataan::where('municipality', $municipality->municipality)
+                        ->update(['absent' => $counting]);
+
+                        Bulacan::where('municipality', $municipality->municipality)
+                        ->update(['absent' => $counting]);
+
+                        Pampanga::where('municipality', $municipality->municipality)
+                        ->update(['absent' => $counting]);
+
+                        Nueva::where('municipality', $municipality->municipality)
+                        ->update(['absent' => $counting]);
+
+                        Tarlac::where('municipality', $municipality->municipality)
+                        ->update(['absent' => $counting]);
+
+                        Zamb::where('municipality', $municipality->municipality)
+                        ->update(['absent' => $counting]);
+                }
+
+                return response()->json(['message' => 'Successfully updated all present']);
+            }
+
 
 }
 

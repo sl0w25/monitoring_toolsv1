@@ -11,13 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('auroras', function (Blueprint $table) {
+        Schema::create('uploadfiles', function (Blueprint $table) {
             $table->id();
-            $table->string('municipality');
-            $table->string('absent')->nullable();
-            $table->string('present')->nullable();
-            $table->string('is_hired')->nullable();
-            $table->string('bene')->nullable();
+            $table->string('upload');
             $table->timestamps();
         });
     }
@@ -27,6 +23,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('auroras');
+        //
     }
 };

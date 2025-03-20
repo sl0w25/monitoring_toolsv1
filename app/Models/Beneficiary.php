@@ -18,7 +18,7 @@ class Beneficiary extends Model
        'sex',
        'barangay',
        'psgc_city',
-       'city',
+       'municipality',
        'province',
        'type_of_assistance',
        'amount',

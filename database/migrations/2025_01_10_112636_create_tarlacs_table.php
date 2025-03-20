@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('tarlacs', function (Blueprint $table) {
             $table->id();
             $table->string('municipality');
-            $table->string('unpaid')->nullable();
-            $table->string('paid')->nullable();
+            $table->string('absent')->nullable();
+            $table->string('present')->nullable();
+            $table->string('is_hired')->nullable();
             $table->string('bene')->nullable();
             $table->timestamps();
         });

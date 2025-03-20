@@ -88,7 +88,8 @@ class myseeder extends Seeder
         //     'City of Meycauayan',
         //     'Obando',
         //     'Sta. Maria',
-        //     'San Jose'
+        //     'San Jose',
+        //     'Angat'
         // ];
 
         // foreach ($bulacan as $bulacans) {

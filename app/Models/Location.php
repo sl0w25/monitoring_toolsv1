@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Nueva extends Model
+class Location extends Model
 {
     protected $fillable = [
+        'region',
+        'province',
         'municipality',
-        'present',
-        'absent',
-        'is_hired',
-        'bene',
+        'barangay',
+        'psgc'
     ];
 }

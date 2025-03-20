@@ -24,7 +24,7 @@ class QrCodeController extends Controller
 
     public function index()
     {
-        $attendances = Attendance::orderBy('created_at', 'desc')->paginate(10);
+        $attendances = Attendance::orderBy('created_at', 'desc')->paginate(9);
         return view('welcome', compact('attendances'));
     }
 
@@ -59,6 +59,9 @@ class QrCodeController extends Controller
         } else{
 
             try {
+
+             //   dd($bene->province);
+
                 DB::transaction(function () use ($bene, $request) {
                     Attendance::create([
                         'bene_id' => $bene->bene_id,

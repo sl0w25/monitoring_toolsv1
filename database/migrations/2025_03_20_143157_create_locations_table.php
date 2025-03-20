@@ -11,13 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('auroras', function (Blueprint $table) {
+        Schema::create('locations', function (Blueprint $table) {
             $table->id();
+            $table->string('region');
+            $table->string('province');
             $table->string('municipality');
-            $table->string('absent')->nullable();
-            $table->string('present')->nullable();
-            $table->string('is_hired')->nullable();
-            $table->string('bene')->nullable();
+            $table->string('barangay');
+            $table->string('psgc');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('auroras');
+        Schema::dropIfExists('locations');
     }
 };

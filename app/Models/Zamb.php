@@ -8,8 +8,9 @@ class Zamb extends Model
 {
     protected $fillable = [
         'municipality',
-        'paid',
-        'unpaid',
+        'present',
+        'absent',
+        'is_hired',
         'bene',
     ];
 }

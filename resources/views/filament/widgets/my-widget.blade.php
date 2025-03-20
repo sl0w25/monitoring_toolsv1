@@ -1,9 +1,10 @@
 <x-filament-widgets::widget>
     <x-filament::section>
+        <div wire:poll.2s>
         <!-- Payout Statistics Section -->
         <div class="bg-white p-4 rounded-lg shadow-md mb-6">
             <h2 class="text-xl font-semibold">Beneficiaries Statistics</h2>
-            <div wire:poll.2s class="mt-4">
+            <div  class="mt-4">
                 <p>Total Beneficiaries: {{ $data['bene_id'] }}</p>
                 <p>Male: {{ $data['male'] }} &nbsp;|&nbsp; Female: {{ $data['female'] }}</p>
                 <p>Total Absent: {{ $data['absent'] }}</p>
@@ -134,7 +135,7 @@
                                                             <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.municipality"></td>
                                                             <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.absent"></td>
                                                             <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.present"></td>
-                                                            <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.hired"></td>
+                                                            <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.is_hired"></td>
                                                             <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.bene"></td>
                                                         </tr>
                                                     </template>
@@ -179,6 +180,7 @@
                 </tbody>
             </table>
         </div>
+    </div>
         <script src="//unpkg.com/alpinejs" defer></script>
     </x-filament::section>
 </x-filament-widgets::widget>

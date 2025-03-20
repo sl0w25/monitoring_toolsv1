@@ -3,6 +3,8 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Pages\Bene;
+use App\Filament\Pages\ClassificationForm;
+use App\Filament\Resources\UserResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -21,6 +23,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Widgets\MyWidget;
+use App\Models\User;
 
 class AppPanelProvider extends PanelProvider
 {
@@ -41,7 +44,7 @@ class AppPanelProvider extends PanelProvider
                     ->label('Admin')
                     ->icon('heroicon-o-cog-6-tooth')
                     ->url('/admin')
-                    ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin())
+                    ->visible(fn (): bool => Auth::check() && Auth::user()->isSwadAdmin() || Auth::user()->isAdmin())
             ])
             ->colors([
                 'danger' => Color::Red,
@@ -55,7 +58,9 @@ class AppPanelProvider extends PanelProvider
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\\Filament\\App\\Pages')
             ->pages([
                 Pages\Dashboard::class,
-                Bene::class,
+                //Bene::class,
+                ClassificationForm::class,
+
             ])
             ->discoverWidgets(in: app_path('Filament/App/Widgets'), for: 'App\\Filament\\App\\Widgets')
             ->widgets([

@@ -4,6 +4,7 @@ namespace App\Filament\Pages;
 
 use App\Models\Attendance;
 use App\Models\Beneficiary;
+use App\Models\Bulacan;
 use App\Models\FamilyHead;
 use Carbon\Carbon;
 use Filament\Forms\Components\Actions\Action;
@@ -22,10 +23,11 @@ use Illuminate\Validation\ValidationException;
 
 class ClassificationForm extends Page
 {
-    protected static ?string $navigationIcon = 'heroicon-o-document-text';
+    protected static ?string $navigationIcon = 'heroicon-o-qr-code';
 
     protected static string $view = 'filament.pages.classification-form';
 
+    protected static ?string $navigationLabel ='Qr Scanning';
 
     public ?array $location = [];
 
@@ -39,6 +41,11 @@ class ClassificationForm extends Page
     public bool $formVisible = false;
 
     protected $listeners = ['setSearchQuery'];
+
+    public function getTitle(): string
+    {
+        return 'QR Scanning';
+    }
 
 
     // public function boot()
@@ -286,6 +293,11 @@ public function fillTheForm($qr_number){
 
 
             $fam->update($validated['location']);
+
+            if ($fam->province == 'Bulacan') {
+                Bulacan::where('municipality', $fam->municipality)->increment('is_hired');
+
+            }
 
             Attendance::where('qr_number', $this->qr_number)->update(['is_hired' => 'hired']);
 
