@@ -1,10 +1,12 @@
 <?php
 
 use App\Filament\Pages\ClassificationForm;
+use App\Filament\Pages\UploadForm;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\QrCodeController;
 use App\Models\Attendance;
+use Filament\Facades\Filament;
 use Filament\Pages\Auth\Login;
 use Filament\Pages\Auth\Register;
 use Illuminate\Http\Request;
@@ -38,6 +40,7 @@ Route::get('/attendances', function () {
         'attendances' => Attendance::orderBy('created_at', 'desc')->paginate(9) // Adjust per page limit
     ]);
 })->name('attendances.list');
+
 
 //Route::post('/register', Login::class)->name('filament.faced.auth.register');
 

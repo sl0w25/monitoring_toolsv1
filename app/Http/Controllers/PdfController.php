@@ -81,27 +81,7 @@ class PdfController extends Controller
 
 
 
-    public function generateQrNumbers()
-    {
 
-        $familyHeads = Beneficiary::all();
-
-        foreach ($familyHeads as $head) {
-
-            if (!$head->qr_number) {
-                do {
-                    $qr_number = mt_rand(1111111111, 9999999999);
-                  //  $encrypted_qr = Crypt::encrypt($qr_number);
-                } while (Beneficiary::where('qr_number', $qr_number)->exists());
-
-
-                $head->qr_number = $qr_number;
-                $head->save();
-            }
-        }
-
-        return response()->json(['message' => 'QR numbers generated successfully for all Family Heads.']);
-    }
 
 
 

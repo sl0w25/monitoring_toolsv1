@@ -19,6 +19,7 @@ use Filament\Pages\Page;
 use Livewire\Attributes\On;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
 
 class ClassificationForm extends Page
@@ -46,6 +47,14 @@ class ClassificationForm extends Page
     {
         return 'QR Scanning';
     }
+
+    // public static function canAccess(): bool
+    // {
+    //     $user = Auth::user();
+
+    //     return ($user && ($user->isAdmin() || !$user->isLgu())) ? true : false;
+    // }
+
 
 
     // public function boot()

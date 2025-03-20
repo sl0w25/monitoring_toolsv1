@@ -6,6 +6,7 @@ use App\Models\Beneficiary;
 use App\Models\FamilyHead;
 use App\Models\FamilyInfo;
 use App\Models\LocationInfo;
+use Filament\Actions\Action as ActionsAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
 use Filament\Pages\Page;
@@ -21,6 +22,8 @@ use Filament\Tables\Table;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Form;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
 class Bene extends Page implements HasForms, HasTable
@@ -112,5 +115,44 @@ class Bene extends Page implements HasForms, HasTable
                     ,
             ]);
     }
+
+    protected function getActions(): array
+    {
+        return [
+            ActionsAction::make('Generate qr Code')
+                ->icon('heroicon-o-cog')
+                ->action(fn () => $this->generateQrNumbers()) // Calls CSV processing method
+                ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin())
+        ];
+    }
+
+
+    public function generateQrNumbers()
+    {
+
+        $familyHeads = Beneficiary::all();
+
+        foreach ($familyHeads as $head) {
+
+            if (!$head->qr_number) {
+                do {
+                    $qr_number = mt_rand(1111111111, 9999999999);
+                  //  $encrypted_qr = Crypt::encrypt($qr_number);
+                } while (Beneficiary::where('qr_number', $qr_number)->exists());
+
+
+                $head->qr_number = $qr_number;
+                $head->save();
+            }
+        }
+        Notification::make()
+        ->title('Success!')
+        ->body('Succesfully generated QR Code')
+        ->danger()
+        ->send();
+        return;
+      //  return response()->json(['message' => 'QR numbers generated successfully for all Family Heads.']);
+    }
+
 
 }

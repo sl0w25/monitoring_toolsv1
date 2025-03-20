@@ -21,6 +21,7 @@ use League\Csv\Reader;
 use Exception;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\Auth;
 
 class UploadForm extends Page implements HasForms
 {
@@ -37,6 +38,11 @@ class UploadForm extends Page implements HasForms
     public function getTitle(): string
     {
         return 'Import List of Beneficiaries';
+    }
+
+    public static function canAccess(): bool
+    {
+        return Auth::user()?->isAdmin(); // Adjust as needed
     }
 
     public function form(Form $form): Form

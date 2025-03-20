@@ -4,6 +4,7 @@ namespace App\Providers\Filament;
 
 use App\Filament\Pages\Bene;
 use App\Filament\Pages\ClassificationForm;
+use App\Filament\Pages\UploadForm;
 use App\Filament\Resources\UserResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -44,7 +45,7 @@ class AppPanelProvider extends PanelProvider
                     ->label('Admin')
                     ->icon('heroicon-o-cog-6-tooth')
                     ->url('/admin')
-                    ->visible(fn (): bool => Auth::check() && Auth::user()->isSwadAdmin() || Auth::user()->isAdmin())
+                    ->visible(fn (): bool => Auth::check() && Auth::user()->isLgu() || Auth::user()->isAdmin())
             ])
             ->colors([
                 'danger' => Color::Red,
@@ -56,12 +57,13 @@ class AppPanelProvider extends PanelProvider
             ])
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\\Filament\\App\\Resources')
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\\Filament\\App\\Pages')
-            ->pages([
-                Pages\Dashboard::class,
-                //Bene::class,
-                ClassificationForm::class,
 
-            ])
+            ->pages(array_filter([
+                Pages\Dashboard::class,
+                ClassificationForm::class,
+            ]))
+
+
             ->discoverWidgets(in: app_path('Filament/App/Widgets'), for: 'App\\Filament\\App\\Widgets')
             ->widgets([
                 // Widgets\AccountWidget::class,
@@ -81,6 +83,7 @@ class AppPanelProvider extends PanelProvider
             ->authMiddleware([
                 Authenticate::class,
             ]);
+
     }
 
     protected function getWidgets(): array

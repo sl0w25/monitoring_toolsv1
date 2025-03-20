@@ -31,7 +31,6 @@ class User extends Authenticatable
         'is_approved',
         'is_province',
         'is_lgu',
-        'swad_admin'
     ];
 
     /**
@@ -58,7 +57,6 @@ class User extends Authenticatable
             'is_approved' => 'boolean',
             'is_province' => 'boolean',
             'is_lgu' => 'boolean',
-            'swad_admin' => 'boolean'
         ];
     }
 
@@ -72,13 +70,14 @@ class User extends Authenticatable
         return $this->approved =='1';
     }
 
-    public function isSwadAdmin(): bool
+    public function isLgu(): bool
     {
-        return $this->swad_admin =='1';
+        return $this->is_lgu =='1';
     }
 
     public function beneficiaries()
-    {
-        return $this->hasMany([Beneficiary::class => 'validated_by']);
-    }
+{
+    return $this->hasMany(Beneficiary::class, 'validated_by');
+}
+
 }

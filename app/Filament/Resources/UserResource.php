@@ -111,7 +111,7 @@ class UserResource extends Resource
 
                 BooleanColumn::make('is_approved')->label('Approved'),
 
-                BooleanColumn::make('swad_admin')->label('Swad Admin')
+                BooleanColumn::make('is_lgu')->label('Swad Admin')
                 ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin()),
             ])
             ->defaultPaginationPageOption(10) // Show more records per page
