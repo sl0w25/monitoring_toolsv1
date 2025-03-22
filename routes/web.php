@@ -19,13 +19,13 @@ Route::get('/generateQRs', [PdfController::class, 'generateQrNumbers']);
 
 Route::get('/download-all', [PdfController::class, 'downloadAll']);
 
-Route::get('/insert', [PdfController::class, 'insertBene']);
+// Route::get('/insert', [PdfController::class, 'insertBene']);
 
-Route::get('/inserthired', [PdfController::class, 'inserthired']);
+// Route::get('/inserthired', [PdfController::class, 'inserthired']);
 
-Route::get('/insertpresent', [PdfController::class, 'insertpresent']);
+// Route::get('/insertpresent', [PdfController::class, 'insertpresent']);
 
-Route::get('/insertabsent', [PdfController::class, 'insertabsent']);
+// Route::get('/insertabsent', [PdfController::class, 'insertabsent']);
 
 Route::get('/bene/{id}/print/{trans_no?}', [PdfController::class, 'print'])->name('faced.print');
 
@@ -42,7 +42,7 @@ Route::get('/attendances', function () {
 })->name('attendances.list');
 
 
-//Route::post('/register', Login::class)->name('filament.faced.auth.register');
+//Route::post('/register', Register::class)->name('filament.faced.auth.register');
 
 
 

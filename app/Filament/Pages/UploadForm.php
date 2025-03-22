@@ -40,10 +40,10 @@ class UploadForm extends Page implements HasForms
         return 'Import List of Beneficiaries';
     }
 
-    public static function canAccess(): bool
-    {
-        return Auth::user()?->isAdmin(); // Adjust as needed
-    }
+    // public static function canAccess(): bool
+    // {
+    //     return Auth::user()?->isAdmin(); // Adjust as needed
+    // }
 
     public function form(Form $form): Form
     {
@@ -71,8 +71,8 @@ class UploadForm extends Page implements HasForms
         return [
             Action::make('Import')
                 ->icon('heroicon-o-arrow-up-on-square')
-                ->disabled(fn () => empty($this->upload)) // Disable if no file is selected
-                ->action(fn () => $this->processCsv()), // Calls CSV processing method
+                ->disabled(fn () => empty($this->upload))
+                ->action(fn () => $this->processCsv()),
         ];
     }
 
@@ -89,7 +89,7 @@ class UploadForm extends Page implements HasForms
         }
 
         // Extract the uploaded file object
-        $uploadedFile = reset($this->upload); // ✅ Get the first uploaded file
+        $uploadedFile = reset($this->upload);
 
         if (!$uploadedFile instanceof \Livewire\Features\SupportFileUploads\TemporaryUploadedFile) {
             Notification::make()
@@ -101,7 +101,7 @@ class UploadForm extends Page implements HasForms
         }
 
         // Move file to storage and get the path
-        $uploadedFilePath = $uploadedFile->store('csvfiles'); // ✅ Move file to storage
+        $uploadedFilePath = $uploadedFile->store('csvfiles');
 
         if (!$uploadedFilePath) {
             Notification::make()
@@ -126,8 +126,9 @@ class UploadForm extends Page implements HasForms
         try {
 
             $csvContent = file_get_contents($fullPath);
+            $csvContent = preg_replace('/^\xEF\xBB\xBF/', '', $csvContent); // Remove BOM
             $csvContent = mb_convert_encoding($csvContent, 'UTF-8', 'auto');
-            file_put_contents($fullPath, $csvContent); // Save back as UTF-8
+            file_put_contents($fullPath, $csvContent);
 
             $csv = Reader::createFromPath($fullPath, 'r');
             $csv->setHeaderOffset(0);
@@ -157,6 +158,7 @@ class UploadForm extends Page implements HasForms
                 'civil_status' => $record['civil_status'] ?? null,
                 'qr_number' => null,
                 'is_hired' => 0,
+                'w_listed' => 0,
                 'status' => null,
                 'validated_by' => null,
                 'ml_user' => null,
@@ -167,9 +169,10 @@ class UploadForm extends Page implements HasForms
                 $this->inserthired();
                 $this->insertpresent();
                 $this->insertabsent();
+                $this->insertwlisted();
             }
 
-            // Optionally delete file after processing
+
             Storage::delete($uploadedFilePath);
 
             Notification::make()
@@ -347,6 +350,47 @@ class UploadForm extends Page implements HasForms
 
         return response()->json(['message' => 'Successfully updated all present']);
     }
+
+    public function insertwlisted()
+    {
+
+        $municipalities = Beneficiary::select('municipality')
+            ->distinct()
+            ->get();
+
+      //  dd($municipalities);
+
+        foreach ($municipalities as $municipality) {
+
+            $counting = Beneficiary::where('municipality', $municipality->municipality)->where('status', null)->count();
+
+
+                Aurora::where('municipality', $municipality->municipality)
+                ->update(['w_listed' => $counting]);
+
+                Bataan::where('municipality', $municipality->municipality)
+                ->update(['w_listed' => $counting]);
+
+                Bulacan::where('municipality', $municipality->municipality)
+                ->update(['w_listed' => $counting]);
+
+                Pampanga::where('municipality', $municipality->municipality)
+                ->update(['w_listed' => $counting]);
+
+                Nueva::where('municipality', $municipality->municipality)
+                ->update(['w_listed' => $counting]);
+
+                Tarlac::where('municipality', $municipality->municipality)
+                ->update(['w_listed' => $counting]);
+
+                Zamb::where('municipality', $municipality->municipality)
+                ->update(['w_listed' => $counting]);
+        }
+
+        return response()->json(['message' => 'Successfully updated all present']);
+    }
+
+
 
 }
 

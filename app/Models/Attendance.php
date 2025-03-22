@@ -17,9 +17,12 @@ class Attendance extends Model
         'ext_name',
         'sex',
         'status',
+        'is_hired',
+        'w_listed',
         'qr_number',
         'amount',
         'time_in'
+
     ];
 
     public function location()

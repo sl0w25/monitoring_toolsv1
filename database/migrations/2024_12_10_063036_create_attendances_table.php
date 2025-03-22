@@ -23,6 +23,8 @@ return new class extends Migration
             $table->string('ext_name')->nullable();
             $table->string('qr_number');
             $table->string('status')->nullable();
+            $table->string('is_hired')->nullable();
+            $table->string('w_listed')->nullable();
             $table->string('amount');
             $table->string('time_in');
             $table->timestamps();

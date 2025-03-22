@@ -29,8 +29,8 @@ class User extends Authenticatable
         'password',
         'is_admin',
         'is_approved',
-        'is_province',
         'is_lgu',
+        'office',
     ];
 
     /**

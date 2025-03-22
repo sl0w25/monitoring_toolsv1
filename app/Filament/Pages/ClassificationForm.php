@@ -6,6 +6,7 @@ use App\Models\Attendance;
 use App\Models\Beneficiary;
 use App\Models\Bulacan;
 use App\Models\FamilyHead;
+use App\Models\User;
 use Carbon\Carbon;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Facades\Filament;
@@ -128,13 +129,13 @@ class ClassificationForm extends Page
                         ->required()
                         ->disabled()
                         ->debounce(500)
-                        ->native(false) // Enables a date picker UI
-                        ->format('Y-m-d') // Stores in YYYY-MM-DD format
+                        ->native(false)
+                        ->format('Y-m-d')
                         ->afterStateUpdated(function (callable $set, callable $get) {
                             $birthday = $get('birthday');
 
                             if ($birthday) {
-                                $age_now = Carbon::parse($birthday)->age; // Calculates age
+                                $age_now = Carbon::parse($birthday)->age;
                                 $set('age', $age_now);
                             } else {
                                 $set('age', null);
@@ -152,16 +153,15 @@ class ClassificationForm extends Page
                         Toggle::make('is_hired')->label('Is Hired?')
                         ->helperText('Toggle if the beneficiary is Hired'),
 
+                        Toggle::make('w_listed')->label('Is WaitListed?')
+                        ->helperText('Toggle if the beneficiary is WaitListed'),
+
                         Hidden::make('validated_by')
                         ->reactive(),
 
                     ])
                     ->columns(4)
                     ->statePath('location'),
-
-
-
-
 
          ]);
 
@@ -195,6 +195,7 @@ public function fillTheForm($qr_number){
             : null,
             'contact' => $beneficiary->contact_number ?? '',
             'is_hired' => $beneficiary->is_hired ?? '',
+           'w_listed' => $beneficiary->w_listed ?? '',
             'validated_by' => Filament::auth()->user()?->id,
 
         ],
@@ -212,11 +213,14 @@ public function fillTheForm($qr_number){
     {
         Log::info('QR number received:', ['qr_number' => $request->qr_number]);
 
+      //  dd($request->qr_number);
+
         try {
 
 
            // Fetch the family head details
            $beneficiary = Attendance::where('qr_number', $request->qr_number)->first();
+          // $beneficiary2 = Beneficiary::where('qr_number', $request->qr_number)->first();
            Log::info('Beneficiary record:', ['beneficiary' => $beneficiary]);
 
 
@@ -230,15 +234,15 @@ public function fillTheForm($qr_number){
 
         }
 
-        if ($beneficiary->is_hired === "hired") {
-
+        if (in_array($beneficiary->is_hired, ['hired']) || in_array($beneficiary->w_listed, ['yes'])) {
             $this->formVisible = false;
             $this->resetExcept(['qr_number']);
 
-            return response()->json(['error' => 'This Beneficiary is Already Hired '], 400);
-
-
+            return response()->json([
+                'error' => 'This Beneficiary is already ' . ($beneficiary->is_hired === 'hired' ? 'hired' : 'Wait Listed')
+            ], 400);
         }
+
 
         if ($beneficiary->is_hired === null) {
 
@@ -285,30 +289,51 @@ public function fillTheForm($qr_number){
         try {
 
             $fam = Beneficiary::where('qr_number', $this->qr_number)->first();
-            if (!$fam) {
-                $this->dispatch('swal',
-                    title: 'Error!',
-                    text: 'Beneficiary not found.',
-                    icon: 'error'
-                );
-                return;
-            }
+            // if (!$fam) {
+            //     $this->dispatch('swal',
+            //         title: 'Error!',
+            //         text: 'Beneficiary not found.',
+            //         icon: 'error'
+            //     );
+            //     return;
+            // }
 
             // Validate input
             $validated = $this->validate([
                 'location.validated_by' => 'required|integer|max:10',
                 'location.is_hired' => 'required|integer|max:1',
+                'location.w_listed' => 'required|integer|max:1',
             ]);
 
+           // dd($validated['location']);
 
             $fam->update($validated['location']);
 
             if ($fam->province == 'Bulacan') {
-                Bulacan::where('municipality', $fam->municipality)->increment('is_hired');
+                // Increment 'is_hired' only if it's true
+                if ($fam->is_hired) {
+                    Bulacan::where('municipality', $fam->municipality)->increment('is_hired');
+                }
 
+                // Increment 'w_listed' only if it's true
+                if ($fam->w_listed) {
+                    Bulacan::where('municipality', $fam->municipality)->increment('w_listed');
+                }
+
+                // Determine the values to update in Attendance
+                $attendanceData = [
+                    'is_hired' => $fam->is_hired ? 'hired' : 'not hired',
+                    'w_listed' => $fam->w_listed ? 'yes' : 'no',
+                ];
+
+                // Update Attendance in a single query
+                Attendance::where('qr_number', $this->qr_number)->update($attendanceData);
             }
 
-            Attendance::where('qr_number', $this->qr_number)->update(['is_hired' => 'hired']);
+
+
+
+
 
 
             $this->formVisible = false;

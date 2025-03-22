@@ -75,6 +75,8 @@ class QrCodeController extends Controller
                         'sex' => $bene->sex,
                         'qr_number' => $request->qr_number,
                         'status' => 'Present',
+                        'is_hired' => null,
+                        'w_listed' => null,
                         'amount' => null,
                         'time_in' => now()->format('Y-m-d h:i A'),
                     ]);

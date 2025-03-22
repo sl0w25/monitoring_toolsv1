@@ -74,7 +74,7 @@ class UserResource extends Resource
             TextInput::make('email')->required()->email(),
             Toggle::make('is_approved')->label('Approve User')
             ->helperText('Enable to grant user access.'),
-            Toggle::make('swad_admin')
+            Toggle::make('is_lgu')
             ->label('Swad Admin')
             ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin())
             ->helperText('Enable to grant admin privileges.'),
@@ -89,8 +89,7 @@ class UserResource extends Resource
             User::when(
                 !Filament::auth()->user()?->is_admin,
                 fn ($query) => $query
-                    ->where('province', Filament::auth()->user()->province)
-                    ->where('municipality', Filament::auth()->user()->municipality)
+                    ->where('office', Filament::auth()->user()->office)
                     ->where('is_lgu', Filament::auth()->user()?->is_lgu ? false : true)
             )
         )

@@ -69,7 +69,7 @@ class Bene extends Page implements HasForms, HasTable
                 Beneficiary::query()
                     ->when(
                         !Filament::auth()->user()->is_admin,
-                        fn($query) => $query->where('ml_user', Filament::auth()->id())
+                        fn($query) => $query->where('ml_user', null) // Filament::auth()->id())
                     )
                     ->selectRaw('ROW_NUMBER() OVER (ORDER BY id) as row_number, beneficiaries.*')
             )
@@ -84,6 +84,9 @@ class Bene extends Page implements HasForms, HasTable
                 TextColumn::make('first_name')->label('First Name')->searchable(),
                 TextColumn::make('middle_name')->label('Middle Name')->searchable(),
                 TextColumn::make('last_name')->label('Last Name')->searchable(),
+                TextColumn::make('is_hired')->label('Hired')->searchable(),
+                TextColumn::make('w_listed')->label('listed')->searchable(),
+                TextColumn::make('qr_number')->label('qr')->searchable(),
             ])
             ->searchable()
             ->filters([

@@ -190,14 +190,18 @@
             tbody.prepend(row);
         }
 
+
         function refreshTable() {
             fetch("{{ route('attendances.list') }}")
                 .then(response => response.json())
                 .then(data => {
                     const tbody = document.querySelector("#attendanceTableBody");
-                    tbody.innerHTML = "";
+                    const existingIds = new Set([...tbody.children].map(row => row.children[0].textContent));
+
                     data.attendances.data.forEach(attendance => {
-                        addAttendanceRow(attendance);
+                        if (!existingIds.has(attendance.id.toString())) {
+                            addAttendanceRow(attendance);
+                        }
                     });
 
                     // Update Pagination Links
@@ -205,6 +209,7 @@
                 })
                 .catch(error => console.error("Error fetching paginated data:", error));
         }
+
         function startScanner() {
             const errorContainer = document.getElementById('error-container');
             const successContainer = document.getElementById('success-container');

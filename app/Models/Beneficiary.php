@@ -30,7 +30,9 @@ class Beneficiary extends Model
        'civil_status',
        'qr_number',
        'is_hired',
-       'ml_user'
+       'w_listed',
+       'ml_user',
+       'validated_by'
        ];
 
 

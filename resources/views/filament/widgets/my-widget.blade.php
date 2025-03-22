@@ -3,13 +3,14 @@
         <div wire:poll.2s>
         <!-- Payout Statistics Section -->
         <div class="bg-white p-4 rounded-lg shadow-md mb-6">
-            <h2 class="text-xl font-semibold">Beneficiaries Statistics</h2>
+            {{-- <h2 class="text-xl font-semibold">Beneficiaries Statistics</h2> --}}
             <div  class="mt-4">
-                <p>Total Beneficiaries: {{ $data['bene_id'] }}</p>
+                {{-- <p>Total Beneficiaries: {{ $data['bene_id'] }}</p>
                 <p>Male: {{ $data['male'] }} &nbsp;|&nbsp; Female: {{ $data['female'] }}</p>
                 <p>Total Absent: {{ $data['absent'] }}</p>
                 <p>Total Present: {{ $data['present'] }}</p>
                 <p>Total Hired: {{ $data['hired'] }}</p>
+                <p>Total Wait Listed: {{ $data['w_listed'] }}</p> --}}
 
             </div>
         </div>
@@ -23,16 +24,19 @@
                             Province
                         </th>
                         <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">
-                            Total Absent
+                            Absent
                         </th>
                         <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">
-                            Total Present
+                            Present
                         </th>
                         <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">
-                            Total Hired
+                            Hired
                         </th>
                         <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">
-                            Total Beneficiaries
+                            Wait Listed
+                        </th>
+                        <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">
+                            Beneficiaries
                         </th>
                         <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">
                             Action
@@ -46,6 +50,7 @@
                             <td class="px-6 py-4 whitespace-nowrap">{{ $province['absent'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $province['present'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $province['hired'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $province['w_listed'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $province['bene'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <!-- Modal Trigger Button -->
@@ -102,6 +107,7 @@
                                                     absent: this.formatNumber(municipality.absent),
                                                     present: this.formatNumber(municipality.present),
                                                     hired: this.formatNumber(municipality.hired),
+                                                    w_listed: this.formatNumber(municipality.w_listed),
                                                     bene: this.formatNumber(municipality.bene)
                                                 }));
                                             },
@@ -118,6 +124,7 @@
                                             <p>Total Absent: {{ $province['absent'] }}</p>
                                             <p>Total Present: {{ $province['present'] }}</p>
                                             <p>Total Hired: {{ $province['hired'] }}</p>
+                                            <p>Total Wait Listed: {{ $province['w_listed'] }}</p>
 
                                             <table class="table-auto w-full divide-y divide-gray-200">
                                                 <thead>
@@ -126,6 +133,7 @@
                                                     <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Absent</th>
                                                     <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Present</th>
                                                     <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Hired</th>
+                                                    <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Wait Listed</th>
                                                     <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Beneficiaries</th>
                                                     </tr>
                                                 </thead>
@@ -136,6 +144,7 @@
                                                             <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.absent"></td>
                                                             <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.present"></td>
                                                             <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.is_hired"></td>
+                                                            <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.w_listed"></td>
                                                             <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.bene"></td>
                                                         </tr>
                                                     </template>

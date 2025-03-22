@@ -24,6 +24,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use App\Filament\Widgets\MyWidget;
+use App\Filament\Widgets\StatsWidget;
 use App\Models\User;
 
 class AppPanelProvider extends PanelProvider
@@ -89,6 +90,7 @@ class AppPanelProvider extends PanelProvider
     protected function getWidgets(): array
     {
         return [
+            StatsWidget::class,
             MyWidget::class,
         ];
     }

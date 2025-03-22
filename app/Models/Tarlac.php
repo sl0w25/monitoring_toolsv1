@@ -11,6 +11,7 @@ class Tarlac extends Model
         'present',
         'absent',
         'is_hired',
+        'w_listed',
         'bene',
     ];
 }

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('absent')->nullable();
             $table->string('present')->nullable();
             $table->string('is_hired')->nullable();
+            $table->string('w_list')->nullable();
             $table->string('bene')->nullable();
             $table->timestamps();
         });

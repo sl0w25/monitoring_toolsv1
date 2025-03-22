@@ -35,9 +35,11 @@ return new class extends Migration
             $table->string('sub_category');
             $table->string('civil_status');
             $table->string('qr_number');
-            $table->string('is_hired');
+            $table->boolean('is_hired')->default(false);
+            $table->boolean('w_listed')->default(false);
             $table->string('status');
-            $table->strig('ml_user');
+            $table->int('validated_by')->nullable();
+            $table->string('ml_user');
             $table->timestamps();
         });
     }
