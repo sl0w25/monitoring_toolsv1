@@ -126,12 +126,21 @@ class UploadForm extends Page implements HasForms
         try {
 
             $csvContent = file_get_contents($fullPath);
-            $csvContent = preg_replace('/^\xEF\xBB\xBF/', '', $csvContent); // Remove BOM
+
+            // Remove BOM if it exists
+            if (substr($csvContent, 0, 3) === "\xEF\xBB\xBF") {
+                $csvContent = substr($csvContent, 3);
+            }
+
+            // Convert encoding to UTF-8
             $csvContent = mb_convert_encoding($csvContent, 'UTF-8', 'auto');
+
+            // Save the cleaned file
             file_put_contents($fullPath, $csvContent);
 
             $csv = Reader::createFromPath($fullPath, 'r');
             $csv->setHeaderOffset(0);
+
 
 
             foreach ($csv as $record) {
