@@ -23,6 +23,7 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Auth;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 
@@ -90,7 +91,12 @@ class Bene extends Page implements HasForms, HasTable
             ])
             ->searchable()
             ->filters([
-
+                SelectFilter::make('Filter')
+                    ->options([
+                        true => 'Hired',
+                        true => 'Wait Listed',
+                        "Present" => 'Attendee'
+                ])
             ])
             ->actions([
                 ViewAction::make('view_details')
