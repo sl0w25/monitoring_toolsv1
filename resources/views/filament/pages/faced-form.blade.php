@@ -98,7 +98,9 @@
         <h5>QR Code</h5>
 
         <div class="qr-container">
-            {!! DNS2D::getBarcodeHTML("$location->qr_number", 'QRCODE', 5, 5) !!} <!-- You can adjust the width/height here -->
+            @if (!empty($location->qr_number))
+                {!! DNS2D::getBarcodeHTML($location->qr_number, 'QRCODE', 5, 5) !!}
+            @endif
         </div>
         <h3>{{ $location->first_name }} @if($location->middle_name)
             {{ Str::substr($location->middle_name, 0, 1,) }}.

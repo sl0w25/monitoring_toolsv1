@@ -6,9 +6,12 @@ use App\Models\Beneficiary;
 use App\Models\FamilyHead;
 use App\Models\FamilyInfo;
 use App\Models\LocationInfo;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action as ActionsAction;
 use Filament\Facades\Filament;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Pages\Page;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\IconColumn;
@@ -23,9 +26,13 @@ use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Form;
 use Filament\Notifications\Notification;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\DeleteBulkAction;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Auth;
+use Livewire\WithPagination;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
+use Filament\Tables\Enums\RecordCheckboxPosition;
 
 class Bene extends Page implements HasForms, HasTable
 {
@@ -43,34 +50,35 @@ class Bene extends Page implements HasForms, HasTable
 
     public $fam_id;
 
+    public array $selectedRecords = [];
+
+    public static function canAccess(): bool
+    {
+        return true;
+    }
+
 
     public function getTitle(): string
     {
         return 'Beneficiary List';
     }
 
+    public function updatedTableRecordsPerPage()
+    {
+        // ✅ Restore selected records when table updates (e.g., filtering, search)
+        $this->dispatchBrowserEvent('restoreSelections', ['selectedRecords' => $this->selectedRecords]);
+    }
+
+
     public function table(Table $table): Table
     {
         return $table
 
-    //    ->query(LocationInfo::with(['accountInfo','familyHeads','assistance']))
-    //         ->columns([
-    //             TextColumn::make('id')->label('Payroll Number')->searchable(),
-    //             TextColumn::make('province')->label('Province')->searchable(),
-    //             TextColumn::make('municipality')->label('Municipaity')->searchable(),
-    //             TextColumn::make('barangay')->label('Barangay')->searchable(),
-    //             TextColumn::make('familyHeads.first_name')->label('First Name')->searchable(),
-    //             TextColumn::make('familyHeads.middle_name')->label('Middle Name')->searchable(),
-    //             TextColumn::make('familyHeads.last_name')->label('Last Name')->searchable(),
-    //             TextColumn::make('assistance.status')->label('Status')->searchable(),
-    //         ])
-
-
             ->query(
                 Beneficiary::query()
                     ->when(
-                        !Filament::auth()->user()->is_admin,
-                        fn($query) => $query->where('ml_user', null) // Filament::auth()->id())
+                        !Filament::auth()->user()->is_admin && !Filament::auth()->user()->is_lgu,
+                        fn($query) => $query->where('ml_user', Filament::auth()->id()) // Filament::auth()->id())
                     )
                     ->selectRaw('ROW_NUMBER() OVER (ORDER BY id) as row_number, beneficiaries.*')
             )
@@ -85,19 +93,89 @@ class Bene extends Page implements HasForms, HasTable
                 TextColumn::make('first_name')->label('First Name')->searchable(),
                 TextColumn::make('middle_name')->label('Middle Name')->searchable(),
                 TextColumn::make('last_name')->label('Last Name')->searchable(),
-                TextColumn::make('is_hired')->label('Hired')->searchable(),
-                TextColumn::make('w_listed')->label('listed')->searchable(),
-                TextColumn::make('qr_number')->label('qr')->searchable(),
+
             ])
             ->searchable()
-            ->filters([
-                SelectFilter::make('Filter')
-                    ->options([
-                        true => 'Hired',
-                        true => 'Wait Listed',
-                        "Present" => 'Attendee'
-                ])
+            ->bulkActions([
+                // Bulk Action 1: Assign to User (Admin Only)
+                BulkAction::make('assign_user')
+                    ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin() || Auth::user()->isLgu())
+                    ->label('Assign to User')
+                    ->icon('heroicon-o-user-circle')
+                    ->form([
+                        Select::make('ml_user')
+                            ->label('Select Municipal Link')
+                            ->options(
+                                User::where('office', auth()->user()->office)
+                                    ->where('id', '!=', auth()->user()->id) 
+                                    ->pluck('name', 'id')
+                            )
+                            ->searchable()
+                            ->required(),
+                    ])
+                    ->action(function ($records, $data) {
+                        foreach ($records as $record) {
+                            $record->update(['ml_user' => $data['ml_user']]); 
+                        }
+            
+                        Notification::make()
+                            ->title('Assignment Successful')
+                            ->body('Selected beneficiaries have been assigned to the selected user.')
+                            ->success()
+                            ->send();
+            
+                        $this->selectedRecords = $records->pluck('id')->toArray();
+                    })
+                    ->deselectRecordsAfterCompletion(false), 
+            
+                // Bulk Action 2: Download QR Codes (All Users)
+                BulkAction::make('download_qr')
+                    ->visible(fn (): bool => Auth::check()) // Available for all authenticated users
+                    ->label('Download QR Codes')
+                    ->icon('heroicon-o-arrow-down-on-square-stack')
+                    ->action(function ($records) {
+                        $pdf = Pdf::loadView('filament.pages.qr-bulk-download', ['records' => $records]);
+            
+                        return response()->streamDownload(function () use ($pdf) {
+                            echo $pdf->output();
+                        }, 'qr_codes.pdf');
+
+                        // return response($pdf->output(), 200, [
+                        //     'Content-Type' => 'application/pdf',
+                        //     'Content-Disposition' => 'inline; filename="faced_id_' . $records->id . '.pdf"',
+                        // ]);
+                    })
             ])
+            
+            ->filters([
+                SelectFilter::make('status')
+                    ->label('Filter by Status')
+                    ->options([
+                        'hired' => 'Hired', 
+                        'wait_listed' => 'Wait Listed', 
+                        'present' => 'Attendee'
+                    ])
+                    ->query(function ($query, $data) {
+                        if (!isset($data['value'])) {
+                            return $query; 
+                        }
+            
+                        $value = $data['value'];
+            
+                        if ($value === 'hired') {
+                            return $query->where('is_hired', true);
+                        } elseif ($value === 'wait_listed') {
+                            return $query->where('w_listed', true);
+                        } elseif ($value === 'present') {
+                            return $query->where('status', 'Present');
+                        }
+            
+                        return $query;
+                    })
+            ])
+            
+                       
+            
             ->actions([
                 ViewAction::make('view_details')
                     ->label('View Details')
@@ -162,6 +240,10 @@ class Bene extends Page implements HasForms, HasTable
         return;
       //  return response()->json(['message' => 'QR numbers generated successfully for all Family Heads.']);
     }
+
+
+
+    
 
 
 }

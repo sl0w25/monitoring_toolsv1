@@ -30,7 +30,6 @@ class AdminPanelProvider extends PanelProvider
           //  ->default()
             ->id('admin')
             ->path('admin')
-
             ->userMenuItems([
                 MenuItem::make()
                     ->label('User')

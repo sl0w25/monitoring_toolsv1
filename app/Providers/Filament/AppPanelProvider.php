@@ -38,6 +38,7 @@ class AppPanelProvider extends PanelProvider
             ->login()
             ->registration()
             ->profile()
+            ->darkMode(false)
             ->widgets([
                 \App\Filament\Widgets\MyWidget::class, // Add your widget here
             ])
@@ -59,10 +60,11 @@ class AppPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/App/Resources'), for: 'App\\Filament\\App\\Resources')
             ->discoverPages(in: app_path('Filament/App/Pages'), for: 'App\\Filament\\App\\Pages')
 
-            ->pages(array_filter([
+            ->pages([
                 Pages\Dashboard::class,
+                Bene::class,
                 ClassificationForm::class,
-            ]))
+            ])
 
 
             ->discoverWidgets(in: app_path('Filament/App/Widgets'), for: 'App\\Filament\\App\\Widgets')

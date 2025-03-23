@@ -68,8 +68,9 @@ class StatsWidget extends BaseWidget
                 ->color('success')
                 ->icon('heroicon-o-users'),
 
-            Stat::make('Hired Beneficiaries', sprintf('%s or %s%%', number_format($totalTransaction), $formattedAverage))
-                ->description($formattedAverage.'%'.PHP_EOL.'Total hired beneficiaries')
+            Stat::make('Attendees', number_format($totalTransaction))
+          //  Stat::make('Hired Beneficiaries', sprintf('%s or %s%%', number_format($totalTransaction), $formattedAverage))
+                ->description('Total hired beneficiaries')
                 ->color('success')
                 ->icon('heroicon-o-users'),
 

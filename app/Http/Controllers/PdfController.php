@@ -25,65 +25,49 @@ use ZipArchive;
 class PdfController extends Controller
 {
     public function print($id)
-    {
-        $location = Beneficiary::findOrFail($id);
-      //  $head = FamilyHead::findOrFail($id);
-        $familyhead = Beneficiary::where('bene_id', $location->id)->get();
+{
+    $location = Beneficiary::findOrFail($id);
+    $familyhead = Beneficiary::where('bene_id', $location->id)->first();
 
-        do {
-            $qr_number = mt_rand(1111111111, 9999999999);
-          //  $encrypted_qr = Crypt::encrypt($qr_number); // Encrypt the QR number
-        } while (Beneficiary::where('qr_number', $qr_number)->exists());
+ 
+    $attempts = 0;
+    do {
+        $qr_number = mt_rand(1111111111, 9999999999);
+        $exists = Beneficiary::where('qr_number', $qr_number)->exists();
+        $attempts++;
+    } while ($exists && $attempts < 10);
 
-             $existingFamilyHead = Beneficiary::where('bene_id', $id)
-             ->whereNull('qr_number')
-             ->orwhere('qr_number', $qr_number)
-             ->first();
-
-
-             if ($existingFamilyHead) {
-
-                Beneficiary::updateOrCreate(
-                    ['bene_id' => $id],
-                    ['qr_number' => $qr_number]
-                );
-
-       $data = [
-           'location' => $location,
-       ];
-
-       $pdf = Pdf::loadView('filament.pages.faced-form', $data);
-      // ->setPaper([0, 0, 85.60, 54.00], 'portrait');
-
-       return response($pdf->output(), 200, [
-           'Content-Type' => 'application/pdf',
-           'Content-Disposition' => 'inline; filename="faced_id_' . $location->id . '.pdf"',
-       ]);
-
-             }else {
-
-
-                $data = [
-                    'location' => $location,
-                ];
-
-
-                $pdf = Pdf::loadView('filament.pages.faced-form', $data);
-              //  ->setPaper([0, 0, 85.60, 54.00], 'portrait');
-
-                return response($pdf->output(), 200, [
-                    'Content-Type' => 'application/pdf',
-                    'Content-Disposition' => 'inline; filename="faced_id_' . $location->id . '.pdf"',
-                ]);
+ 
+    if ($exists) {
+        return response()->json(['error' => 'Failed to generate a unique QR number'], 500);
     }
 
+    
+    $existingFamilyHead = Beneficiary::where('bene_id', $id)
+        ->where(function ($query) use ($qr_number) {
+            $query->whereNull('qr_number')->orWhere('qr_number', $qr_number);
+        })
+        ->first();
+
+    if ($existingFamilyHead) {
+       
+        if (!$existingFamilyHead->qr_number) {
+            $existingFamilyHead->update(['qr_number' => $qr_number]);
+        }
+
+        $data = ['location' => $familyhead];
+    } else {
+        $data = ['location' => $location];
     }
 
 
+    $pdf = Pdf::loadView('filament.pages.faced-form', $data);
 
-
-
-
+    return response($pdf->output(), 200, [
+        'Content-Type' => 'application/pdf',
+        'Content-Disposition' => 'inline; filename="faced_id_' . $location->id . '.pdf"',
+    ]);
+}
 
 
     public function downloadAll()
