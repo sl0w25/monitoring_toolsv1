@@ -14,27 +14,26 @@
             text-align: center;
         }
 
-        /* Container to hold all QR cards */
+
         .container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr); /* Two equal columns */
-            gap: 10px; /* Space between grid items */
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
         }
 
 
-        /* Individual QR Card */
+
         .card {
-            width: 47%; /* Adjusted to fit two columns */
-            height: 55mm; /* Each card height to fit four rows */
+            width: 47%;
+            height: 55mm;
             border: 1px solid black;
-            /* display: flex; */
             flex-direction: column;
             justify-content: center;
             align-items: center;
             text-align: center;
             position: relative;
             padding: 5px;
-            margin-bottom: 8mm; /* Space between rows */
+            margin-bottom: 8mm;
         }
 
         .qr-container {
@@ -107,7 +106,7 @@
                         {!! DNS2D::getBarcodeHTML($location->qr_number, 'QRCODE', 5, 5) !!}
                     @endif
                 </div>
-                <h3>{{ $location->first_name }} 
+                <h3>{{ $location->first_name }}
                     @if ($location->middle_name)
                         {{ Str::substr($location->middle_name, 0, 1) }}.
                     @endif

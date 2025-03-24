@@ -95,11 +95,12 @@ class UserResource extends Resource
         )
             ->columns([
                 TextColumn::make('name')->sortable(),
-                TextColumn::make('location')
-                    ->label('Location')
-                    ->getStateUsing(fn ($record) => "{$record->province}, {$record->municipality}, {$record->barangay}")
-                    ->sortable()
-                    ->wrap(),
+                TextColumn::make('office')->sortable(),
+                // TextColumn::make('location')
+                //     ->label('Location')
+                //     ->getStateUsing(fn ($record) => "{$record->province}, {$record->municipality}, {$record->barangay}")
+                //     ->sortable()
+                //     ->wrap(),
                 // TextColumn::make('contact'),
                 TextColumn::make('email')->sortable(),
                 TextColumn::make('validated_count')

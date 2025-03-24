@@ -22,6 +22,7 @@ use Exception;
 use Filament\Actions\Action;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
 
 class UploadForm extends Page implements HasForms
 {
@@ -73,6 +74,11 @@ class UploadForm extends Page implements HasForms
                 ->icon('heroicon-o-arrow-up-on-square')
                 ->disabled(fn () => empty($this->upload))
                 ->action(fn () => $this->processCsv()),
+
+                Action::make('download')
+                ->label('Template')
+                ->icon('heroicon-o-arrow-down-tray')
+                ->url(fn () => Storage::url('csvfiles/template.csv'), true),
         ];
     }
 
@@ -133,7 +139,10 @@ class UploadForm extends Page implements HasForms
             }
 
             // Convert encoding to UTF-8
-            $csvContent = mb_convert_encoding($csvContent, 'UTF-8', 'auto');
+            $encoding = mb_detect_encoding($csvContent, ['UTF-8', 'ISO-8859-1', 'Windows-1252'], true);
+
+            $csvContent = mb_convert_encoding($csvContent, 'UTF-8', $encoding ?: 'UTF-8');
+
 
             // Save the cleaned file
             file_put_contents($fullPath, $csvContent);
@@ -398,6 +407,22 @@ class UploadForm extends Page implements HasForms
 
         return response()->json(['message' => 'Successfully updated all present']);
     }
+
+
+        public function downloadTemplate()
+        {
+            $filePath = 'storage/csvfiles/template.csv';
+
+            dd(Storage::exist($filePath));
+
+            if (!Storage::exists($filePath)) {
+                abort(404, 'Template file not found.');
+            }
+
+
+
+            return Storage::download($filePath);
+        }
 
 
 

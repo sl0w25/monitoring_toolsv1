@@ -65,9 +65,9 @@ class Bene extends Page implements HasForms, HasTable
 
     public function updatedTableRecordsPerPage()
     {
-        // ✅ Restore selected records when table updates (e.g., filtering, search)
-        $this->dispatchBrowserEvent('restoreSelections', ['selectedRecords' => $this->selectedRecords]);
+        $this->dispatch('restoreSelections', selectedRecords: $this->selectedRecords);
     }
+
 
 
     public function table(Table $table): Table
@@ -97,45 +97,48 @@ class Bene extends Page implements HasForms, HasTable
             ])
             ->searchable()
             ->bulkActions([
-                // Bulk Action 1: Assign to User (Admin Only)
+
                 BulkAction::make('assign_user')
                     ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin() || Auth::user()->isLgu())
                     ->label('Assign to User')
                     ->icon('heroicon-o-user-circle')
                     ->form([
                         Select::make('ml_user')
-                            ->label('Select Municipal Link')
-                            ->options(
-                                User::where('office', auth()->user()->office)
-                                    ->where('id', '!=', auth()->user()->id) 
-                                    ->pluck('name', 'id')
-                            )
-                            ->searchable()
-                            ->required(),
+                        ->label('Select Municipal Link')
+                        ->options(fn () => User::query()
+                        ->when(!Auth::user()->isAdmin(), fn ($query) =>
+                            $query->where('office', Auth::user()->office)
+                        )
+                        ->where('id', '!=', Auth::user()->id)
+                        ->get()
+                        ->mapWithKeys(fn ($user) => [$user->id => "{$user->name} - {$user->office}"])
+                        ->toArray()
+                    )
+                        ->searchable()
+                        ->required(),
                     ])
                     ->action(function ($records, $data) {
                         foreach ($records as $record) {
-                            $record->update(['ml_user' => $data['ml_user']]); 
+                            $record->update(['ml_user' => $data['ml_user']]);
                         }
-            
+
                         Notification::make()
                             ->title('Assignment Successful')
                             ->body('Selected beneficiaries have been assigned to the selected user.')
                             ->success()
                             ->send();
-            
+
                         $this->selectedRecords = $records->pluck('id')->toArray();
                     })
-                    ->deselectRecordsAfterCompletion(false), 
-            
-                // Bulk Action 2: Download QR Codes (All Users)
+                    ->deselectRecordsAfterCompletion(false),
+
                 BulkAction::make('download_qr')
-                    ->visible(fn (): bool => Auth::check()) // Available for all authenticated users
+                    ->visible(fn (): bool => Auth::check())
                     ->label('Download QR Codes')
                     ->icon('heroicon-o-arrow-down-on-square-stack')
                     ->action(function ($records) {
                         $pdf = Pdf::loadView('filament.pages.qr-bulk-download', ['records' => $records]);
-            
+
                         return response()->streamDownload(function () use ($pdf) {
                             echo $pdf->output();
                         }, 'qr_codes.pdf');
@@ -146,22 +149,22 @@ class Bene extends Page implements HasForms, HasTable
                         // ]);
                     })
             ])
-            
+
             ->filters([
                 SelectFilter::make('status')
                     ->label('Filter by Status')
                     ->options([
-                        'hired' => 'Hired', 
-                        'wait_listed' => 'Wait Listed', 
+                        'hired' => 'Hired',
+                        'wait_listed' => 'Wait Listed',
                         'present' => 'Attendee'
                     ])
                     ->query(function ($query, $data) {
                         if (!isset($data['value'])) {
-                            return $query; 
+                            return $query;
                         }
-            
+
                         $value = $data['value'];
-            
+
                         if ($value === 'hired') {
                             return $query->where('is_hired', true);
                         } elseif ($value === 'wait_listed') {
@@ -169,13 +172,13 @@ class Bene extends Page implements HasForms, HasTable
                         } elseif ($value === 'present') {
                             return $query->where('status', 'Present');
                         }
-            
+
                         return $query;
                     })
             ])
-            
-                       
-            
+
+
+
             ->actions([
                 ViewAction::make('view_details')
                     ->label('View Details')
@@ -243,7 +246,7 @@ class Bene extends Page implements HasForms, HasTable
 
 
 
-    
+
 
 
 }

@@ -31,6 +31,7 @@ class User extends Authenticatable
         'is_approved',
         'is_lgu',
         'office',
+        'employee_id'
     ];
 
     /**
