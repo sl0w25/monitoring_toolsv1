@@ -54,6 +54,7 @@ class Bene extends Page implements HasForms, HasTable
 
     public static function canAccess(): bool
     {
+
         return true;
     }
 
@@ -101,6 +102,7 @@ class Bene extends Page implements HasForms, HasTable
                 BulkAction::make('assign_user')
                     ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin() || Auth::user()->isLgu())
                     ->label('Assign to User')
+                    ->modalButton('Confirm Assignment')
                     ->icon('heroicon-o-user-circle')
                     ->form([
                         Select::make('ml_user')
@@ -111,13 +113,26 @@ class Bene extends Page implements HasForms, HasTable
                         )
                         ->where('id', '!=', Auth::user()->id)
                         ->get()
-                        ->mapWithKeys(fn ($user) => [$user->id => "{$user->name} - {$user->office}"])
+                        ->mapWithKeys(fn ($user) => [$user->id => "{$user->name} - ({$user->employee_id})"])
                         ->toArray()
                     )
                         ->searchable()
                         ->required(),
                     ])
                     ->action(function ($records, $data) {
+                        $alreadyAssigned = $records->filter(fn ($record) => !empty($record->ml_user));
+
+                        if ($alreadyAssigned->isNotEmpty()) {
+                            Notification::make()
+                                ->title('Assignment Failed')
+                                ->body('Some beneficiaries are already assigned to a user.')
+                                ->danger()
+                                ->send();
+
+                            return;
+                        }
+
+                        // Assign only if ml_user is empty
                         foreach ($records as $record) {
                             $record->update(['ml_user' => $data['ml_user']]);
                         }
@@ -129,8 +144,7 @@ class Bene extends Page implements HasForms, HasTable
                             ->send();
 
                         $this->selectedRecords = $records->pluck('id')->toArray();
-                    })
-                    ->deselectRecordsAfterCompletion(false),
+                    }),
 
                 BulkAction::make('download_qr')
                     ->visible(fn (): bool => Auth::check())
@@ -238,7 +252,7 @@ class Bene extends Page implements HasForms, HasTable
         Notification::make()
         ->title('Success!')
         ->body('Succesfully generated QR Code')
-        ->danger()
+        ->success()
         ->send();
         return;
       //  return response()->json(['message' => 'QR numbers generated successfully for all Family Heads.']);

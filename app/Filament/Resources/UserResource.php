@@ -20,6 +20,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class UserResource extends Resource
 {
@@ -32,45 +33,42 @@ class UserResource extends Resource
     protected static ?int $navigationSort = 4;
 
 
-    // public static function getNavigationBadge(): ?string
-    // {
-    //     return static::getModel()::query()->when(
-    //         !Filament::auth()->user()?->is_admin,
-    //         fn ($query) => $query
-    //             ->where('province', Filament::auth()->user()->province)
-    //             ->where('municipality', Filament::auth()->user()->municipality)
-    //             ->where('is_lgu', Filament::auth()->user()?->is_lgu ? false : true)
-    //             ->where('is_approved', Filament::auth()->user()?->is_approved ? false : true)
-    //             )
-    //             ->when(
-    //                 Filament::auth()->user()?->is_admin,
-    //                 fn ($query) => $query
-    //                     ->where('province', Filament::auth()->user()->province)
-    //                     ->where('municipality', Filament::auth()->user()->municipality)
-    //                     ->where('is_lgu', Filament::auth()->user()?->is_lgu ? false : true)
-    //                     ->where('is_approved', false)
-    //             )
-    //             ->count();
-    // }
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::query()->when(
+            !Filament::auth()->user()?->is_admin,
+            fn ($query) => $query
+                ->where('office', Filament::auth()->user()->office)
+                ->where('is_lgu', Filament::auth()->user()?->is_lgu ? false : true)
+                ->where('is_approved', Filament::auth()->user()?->is_approved ? false : true)
+                )
+                ->when(
+                    Filament::auth()->user()?->is_admin,
+                    fn ($query) => $query
+                        ->where('is_lgu', Filament::auth()->user()?->is_lgu ? false : true)
+                        ->where('is_approved', false)
+                )
+                ->count();
+    }
 
-    // public static function getNavigationBadgeColor(): ?string
-    // {
-    //     return static::getModel()::query()->when(
-    //         !Filament::auth()->user()?->is_admin,
-    //         fn ($query) => $query
-    //             ->where('province', Filament::auth()->user()->province)
-    //             ->where('municipality', Filament::auth()->user()->municipality)
-    //             ->where('is_lgu', Filament::auth()->user()?->is_lgu ? false : true)
-    //             ->where('is_approved', Filament::auth()->user()?->is_approved ? false : true)
-    //     )->count() > 0 ? 'warning' : 'primary';
-    // }
+    public static function getNavigationBadgeColor(): ?string
+    {
+        return static::getModel()::query()->when(
+            !Filament::auth()->user()?->is_admin,
+            fn ($query) => $query
+                ->where('province', Filament::auth()->user()->province)
+                ->where('municipality', Filament::auth()->user()->municipality)
+                ->where('is_lgu', Filament::auth()->user()?->is_lgu ? false : true)
+                ->where('is_approved', Filament::auth()->user()?->is_approved ? false : true)
+        )->count() > 0 ? 'warning' : 'primary';
+    }
 
 
     public static function form(Form $form): Form
     {
         return $form
         ->schema([
-            TextInput::make('name')->required(),
+            TextInput::make('name')->label(__('Full Name'))->required(),
             TextInput::make('email')->required()->email(),
             Toggle::make('is_approved')->label('Approve User')
             ->helperText('Enable to grant user access.'),
@@ -92,9 +90,14 @@ class UserResource extends Resource
                     ->where('office', Filament::auth()->user()->office)
                     ->where('is_lgu', Filament::auth()->user()?->is_lgu ? false : true)
             )
+            ->when(
+                Filament::auth()->user()?->is_admin,
+                fn ($query) => $query
+                    ->where('is_admin', Filament::auth()->user()?->is_admin ? false : true)
+            )
         )
             ->columns([
-                TextColumn::make('name')->sortable(),
+                TextColumn::make('name')->label(__('Full Name'))->sortable(),
                 TextColumn::make('office')->sortable(),
                 // TextColumn::make('location')
                 //     ->label('Location')
@@ -114,8 +117,8 @@ class UserResource extends Resource
                 BooleanColumn::make('is_lgu')->label('Swad Admin')
                 ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin()),
             ])
-            ->defaultPaginationPageOption(10) // Show more records per page
-            ->striped() // Adds zebra-striping for better readability
+            ->defaultPaginationPageOption(10)
+            ->striped()
 
             ->filters([
                 SelectFilter::make('is_approved')

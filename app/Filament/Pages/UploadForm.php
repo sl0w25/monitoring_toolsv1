@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Storage;
 use League\Csv\Reader;
 use Exception;
 use Filament\Actions\Action;
+use Filament\Facades\Filament;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Response;
@@ -41,10 +42,17 @@ class UploadForm extends Page implements HasForms
         return 'Import List of Beneficiaries';
     }
 
-    // public static function canAccess(): bool
-    // {
-    //     return Auth::user()?->isAdmin(); // Adjust as needed
-    // }
+    public static function canAccess(): bool
+    {
+        if(!Filament::auth()->user()->is_admin){
+            return false;
+        }
+
+        else{
+
+        return true;
+         }
+    }
 
     public function form(Form $form): Form
     {

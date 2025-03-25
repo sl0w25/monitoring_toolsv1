@@ -30,6 +30,17 @@ class ExportForm extends Page
 
     protected static ?int $navigationSort = 5;
 
+    public static function canAccess(): bool
+    {
+        if(!Filament::auth()->user()->is_admin){
+            return false;
+        }
+
+        else{
+
+        return true;
+         }
+    }
 
 
         public function downloadTemplate()
