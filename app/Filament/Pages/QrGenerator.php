@@ -14,10 +14,10 @@ class QrGenerator extends Page
 
     protected static ?string $navigationGroup = 'QR Code Management';
 
-      // public static function canAccess(): bool
-    // {
-    //     return Auth::user()?->isAdmin(); // Adjust as needed
-    // }
+      public static function canAccess(): bool
+    {
+        return false; //Auth::user()?->isAdmin(); // Adjust as needed
+    }
 
     public static function shouldRegisterNavigation(): bool
     {

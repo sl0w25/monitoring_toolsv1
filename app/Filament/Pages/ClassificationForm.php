@@ -3,10 +3,16 @@
 namespace App\Filament\Pages;
 
 use App\Models\Attendance;
+use App\Models\Aurora;
+use App\Models\Bataan;
 use App\Models\Beneficiary;
 use App\Models\Bulacan;
 use App\Models\FamilyHead;
+use App\Models\Nueva;
+use App\Models\Pampanga;
+use App\Models\Tarlac;
 use App\Models\User;
+use App\Models\Zamb;
 use Carbon\Carbon;
 use Filament\Forms\Components\Actions\Action;
 use Filament\Facades\Filament;
@@ -310,34 +316,140 @@ public function fillTheForm($qr_number){
             $fam->update($validated['location']);
 
             if ($fam->province == 'Bulacan') {
-                // Increment 'is_hired' only if it's true
+
                 if ($fam->is_hired) {
                     Bulacan::where('municipality', $fam->municipality)->increment('is_hired');
                 }
 
-                // Increment 'w_listed' only if it's true
                 if ($fam->w_listed) {
                     Bulacan::where('municipality', $fam->municipality)->increment('w_listed');
                 }
 
-                // Determine the values to update in Attendance
                 $attendanceData = [
                     'is_hired' => $fam->is_hired ? 'hired' : 'not hired',
                     'w_listed' => $fam->w_listed ? 'yes' : 'no',
                 ];
 
-                // Update Attendance in a single query
+
+                Attendance::where('qr_number', $this->qr_number)->update($attendanceData);
+            }
+
+            if ($fam->province == 'Pampanga') {
+
+                if ($fam->is_hired) {
+                    Pampanga::where('municipality', $fam->municipality)->increment('is_hired');
+                }
+
+                if ($fam->w_listed) {
+                    Pampanga::where('municipality', $fam->municipality)->increment('w_listed');
+                }
+
+                $attendanceData = [
+                    'is_hired' => $fam->is_hired ? 'hired' : 'not hired',
+                    'w_listed' => $fam->w_listed ? 'yes' : 'no',
+                ];
+
+
+                Attendance::where('qr_number', $this->qr_number)->update($attendanceData);
+            }
+
+            if ($fam->province == 'Aurora') {
+
+                if ($fam->is_hired) {
+                    Aurora::where('municipality', $fam->municipality)->increment('is_hired');
+                }
+
+                if ($fam->w_listed) {
+                    Aurora::where('municipality', $fam->municipality)->increment('w_listed');
+                }
+
+                $attendanceData = [
+                    'is_hired' => $fam->is_hired ? 'hired' : 'not hired',
+                    'w_listed' => $fam->w_listed ? 'yes' : 'no',
+                ];
+
+
+                Attendance::where('qr_number', $this->qr_number)->update($attendanceData);
+            }
+
+            if ($fam->province == 'Bataan') {
+
+                if ($fam->is_hired) {
+                    Bataan::where('municipality', $fam->municipality)->increment('is_hired');
+                }
+
+                if ($fam->w_listed) {
+                    Bataan::where('municipality', $fam->municipality)->increment('w_listed');
+                }
+
+                $attendanceData = [
+                    'is_hired' => $fam->is_hired ? 'hired' : 'not hired',
+                    'w_listed' => $fam->w_listed ? 'yes' : 'no',
+                ];
+
+
+                Attendance::where('qr_number', $this->qr_number)->update($attendanceData);
+            }
+
+            if ($fam->province == 'Nueva Ecija') {
+
+                if ($fam->is_hired) {
+                    Nueva::where('municipality', $fam->municipality)->increment('is_hired');
+                }
+
+                if ($fam->w_listed) {
+                    Nueva::where('municipality', $fam->municipality)->increment('w_listed');
+                }
+
+                $attendanceData = [
+                    'is_hired' => $fam->is_hired ? 'hired' : 'not hired',
+                    'w_listed' => $fam->w_listed ? 'yes' : 'no',
+                ];
+
+
+                Attendance::where('qr_number', $this->qr_number)->update($attendanceData);
+            }
+
+            if ($fam->province == 'Tarlac') {
+
+                if ($fam->is_hired) {
+                    Tarlac::where('municipality', $fam->municipality)->increment('is_hired');
+                }
+
+                if ($fam->w_listed) {
+                    Tarlac::where('municipality', $fam->municipality)->increment('w_listed');
+                }
+
+                $attendanceData = [
+                    'is_hired' => $fam->is_hired ? 'hired' : 'not hired',
+                    'w_listed' => $fam->w_listed ? 'yes' : 'no',
+                ];
+
+
+                Attendance::where('qr_number', $this->qr_number)->update($attendanceData);
+            }
+
+            if ($fam->province == 'Zambales') {
+
+                if ($fam->is_hired) {
+                    Zamb::where('municipality', $fam->municipality)->increment('is_hired');
+                }
+
+                if ($fam->w_listed) {
+                    Zamb::where('municipality', $fam->municipality)->increment('w_listed');
+                }
+
+                $attendanceData = [
+                    'is_hired' => $fam->is_hired ? 'hired' : 'not hired',
+                    'w_listed' => $fam->w_listed ? 'yes' : 'no',
+                ];
+
+
                 Attendance::where('qr_number', $this->qr_number)->update($attendanceData);
             }
 
 
-
-
-
-
-
             $this->formVisible = false;
-
 
 
             $this->dispatch('swal',

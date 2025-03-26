@@ -68,7 +68,9 @@ class UserResource extends Resource
     {
         return $form
         ->schema([
-            TextInput::make('name')->label(__('Full Name'))->required(),
+            TextInput::make('name')->label(__('Full Name'))->rules(['regex:/^[a-zA-ZñÑ\s\-.]+$/u'])->validationMessages([
+                'regex' => 'Invalid Name!',
+            ]),
             TextInput::make('email')->required()->email(),
             Toggle::make('is_approved')->label('Approve User')
             ->helperText('Enable to grant user access.'),

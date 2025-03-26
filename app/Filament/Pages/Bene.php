@@ -87,7 +87,7 @@ class Bene extends Page implements HasForms, HasTable
 
 
             ->columns([
-                TextColumn::make('row_number')->label('#'),
+                TextColumn::make('row_number')->label('No.'),
                 TextColumn::make('province')->label('Province')->searchable(),
                 TextColumn::make('municipality')->label('Municipaity')->searchable(),
                 TextColumn::make('barangay')->label('Barangay')->searchable(),
@@ -223,7 +223,8 @@ class Bene extends Page implements HasForms, HasTable
     protected function getActions(): array
     {
         return [
-            ActionsAction::make('Generate qr Code')
+            ActionsAction::make('generate')
+                ->label('Generate Qr Code')
                 ->icon('heroicon-o-cog')
                 ->action(fn () => $this->generateQrNumbers()) // Calls CSV processing method
                 ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin())
@@ -236,6 +237,7 @@ class Bene extends Page implements HasForms, HasTable
 
         $familyHeads = Beneficiary::all();
 
+       //dd($familyHeads);
         foreach ($familyHeads as $head) {
 
             if (!$head->qr_number) {

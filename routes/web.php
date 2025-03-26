@@ -15,17 +15,9 @@ use Illuminate\Http\Request;
 //     return view('welcome');
 // });
 
-Route::get('/generateQRs', [PdfController::class, 'generateQrNumbers']);
+//Route::get('/generateQRs', [PdfController::class, 'generateQrNumbers']);
 
-Route::get('/download-all', [PdfController::class, 'downloadAll']);
-
-// Route::get('/insert', [PdfController::class, 'insertBene']);
-
-// Route::get('/inserthired', [PdfController::class, 'inserthired']);
-
-// Route::get('/insertpresent', [PdfController::class, 'insertpresent']);
-
-// Route::get('/insertabsent', [PdfController::class, 'insertabsent']);
+//Route::get('/download-all', [PdfController::class, 'downloadAll']);
 
 Route::get('/bene/{id}/print/{trans_no?}', [PdfController::class, 'print'])->name('faced.print');
 
@@ -37,12 +29,20 @@ Route::get('/', [QrCodeController::class, 'index'])->name('qr-scanner');
 
 Route::get('/attendances', function () {
     return response()->json([
-        'attendances' => Attendance::orderBy('created_at', 'desc')->paginate(9) // Adjust per page limit
+        'attendances' => Attendance::orderBy('created_at', 'desc')->paginate(9)
     ]);
 })->name('attendances.list');
 
 
 //Route::post('/register', Register::class)->name('filament.faced.auth.register');
+
+// Route::get('/insert', [PdfController::class, 'insertBene']);
+
+// Route::get('/inserthired', [PdfController::class, 'inserthired']);
+
+// Route::get('/insertpresent', [PdfController::class, 'insertpresent']);
+
+// Route::get('/insertabsent', [PdfController::class, 'insertabsent']);
 
 
 
