@@ -267,7 +267,7 @@ class Register extends SimplePage
             ->required()
             ->prefixIcon('heroicon-o-identification')
             ->maxLength(20)
-            ->placeholder('Enter your DSWD ID No.')
+            ->placeholder('Enter your DSWD ID No. 03-XXXX')
             ->autofocus()
             ->unique($this->getUserModel());
 

@@ -45,6 +45,9 @@ class Login extends SimplePage
      */
     protected static string $view = 'filament-panels::pages.auth.login';
 
+    //protected static string $view = 'vendor.filament.components.simple';
+
+
     /**
      * @var array<string, mixed> | null
      */
@@ -294,6 +297,8 @@ class Login extends SimplePage
             'password' => $data['password'],
         ];
     }
+
+
 
 
 }

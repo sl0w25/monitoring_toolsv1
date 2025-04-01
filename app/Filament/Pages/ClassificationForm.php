@@ -259,6 +259,7 @@ public function fillTheForm($qr_number){
                     'name' => $beneficiary->first_name . ' ' .$beneficiary->middle_name. ' ' . $beneficiary->last_name,
                     'province' => $beneficiary->province,
                     'municipality' => $beneficiary->municipality,
+                    'barangay' => $beneficiary->barangay,
                 ]
             ]);
 

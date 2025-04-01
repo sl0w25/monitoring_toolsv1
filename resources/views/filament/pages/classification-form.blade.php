@@ -62,7 +62,7 @@
                 } else if(data.success) {
                     Swal.fire({
                         title: 'Record Found!',
-                        text: `Beneficiary: ${data.data.name}\nProvince: ${data.data.province}`,
+                        html: `Beneficiary: ${data.data.name}<br>Address: ${data.data.province},\n${data.data.municipality},\n${data.data.barangay}`,
                         icon: 'success',
                         confirmButtonText: 'OK'
                     });
@@ -74,7 +74,7 @@
                     console.log("Dispatching Livewire event: setSearchQuery with QR:", content);
                     console.log(Livewire);
 
-
+                    // Livewire.dispatch("saveImage", { imageCapture: imageData });
                     Livewire.dispatch("fillTheForm", { qr_number: content });
 
                 }

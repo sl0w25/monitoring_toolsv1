@@ -28,6 +28,7 @@ use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\DeleteBulkAction;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
@@ -40,11 +41,11 @@ class Bene extends Page implements HasForms, HasTable
     use InteractsWithTable;
     use InteractsWithForms;
 
-    protected static ?string $navigationIcon = 'heroicon-o-list-bullet';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     protected static string $view = 'filament.pages.bene';
 
-    protected static ?string $navigationLabel ='Beneficiary List';
+    protected static ?string $navigationLabel ='Master List';
 
     protected static ?int $navigationSort = 2;
 
@@ -54,14 +55,13 @@ class Bene extends Page implements HasForms, HasTable
 
     public static function canAccess(): bool
     {
-
-        return true;
+        return Filament::auth()->user()->is_admin || Filament::auth()->user()->is_lgu;
     }
 
 
     public function getTitle(): string
     {
-        return 'Beneficiary List';
+        return 'Master List';
     }
 
     public function updatedTableRecordsPerPage()
@@ -94,6 +94,7 @@ class Bene extends Page implements HasForms, HasTable
                 TextColumn::make('first_name')->label('First Name')->searchable(),
                 TextColumn::make('middle_name')->label('Middle Name')->searchable(),
                 TextColumn::make('last_name')->label('Last Name')->searchable(),
+
 
             ])
             ->searchable()

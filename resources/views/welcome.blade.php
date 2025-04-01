@@ -168,6 +168,7 @@
             </div>
         </div>
     </div>
+    <audio id="scanSound" src="storage/sounds/beep.mp3"></audio>
 
     <!-- Instascan JS -->
     <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
@@ -204,7 +205,7 @@
                         }
                     });
 
-                    // Update Pagination Links
+
                     document.querySelector(".mt-4").innerHTML = data.attendances.links;
                 })
                 .catch(error => console.error("Error fetching paginated data:", error));
@@ -213,17 +214,35 @@
         function startScanner() {
             const errorContainer = document.getElementById('error-container');
             const successContainer = document.getElementById('success-container');
+            const scanSound = document.getElementById('scanSound');
+            const video = document.getElementById('interactive');
 
-            scanner = new Instascan.Scanner({ video: document.getElementById('interactive') });
+
+            scanner = new Instascan.Scanner({ video });
 
             scanner.addListener('scan', function (content) {
                 console.log('QR Code Scanned:', content);
 
+                scanSound.play();
+
                 errorContainer.classList.add('hidden');
                 successContainer.classList.add('hidden');
 
+
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+                const imageData = canvas.toDataURL('image/png');
+                const imageBlob = base64ToBlob(imageData, 'image/png');
+
+
                 const formData = new FormData();
                 formData.append('qr_number', content);
+                formData.append('imageCapture', imageBlob, 'capture.png');
+
 
                 fetch("{{ route('scan.qr') }}", {
                     method: 'POST',
@@ -232,18 +251,10 @@
                     },
                     body: formData,
                 })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(err => {
-                            throw new Error(err.error || 'Unexpected error occurred');
-                        });
-                    }
-                    return response.json();
-                })
+                .then(response => response.json())
                 .then(data => {
                     console.log('Attendance Response:', data);
                     if (data.error) {
-                        console.log(data.error);
                         errorContainer.classList.remove('hidden');
                         errorContainer.innerHTML = data.error;
                     } else {
@@ -253,16 +264,18 @@
                     }
                 })
                 .catch(error => {
-                    console.log('Error:', error.message);
+                    console.error('Error:', error);
                     errorContainer.classList.remove('hidden');
                     errorContainer.innerHTML = error.message;
                 });
             });
 
+
             Instascan.Camera.getCameras()
                 .then(function (cameras) {
                     if (cameras.length > 0) {
-                        scanner.start(cameras[0]);
+                        let backCamera = cameras.find(camera => camera.name.toLowerCase().includes('back')) || cameras[0];
+                        scanner.start(backCamera);
                     } else {
                         console.error('No cameras found.');
                         alert('No cameras found.');
@@ -273,6 +286,17 @@
                     alert('Camera access error: ' + err);
                 });
         }
+
+
+        function base64ToBlob(base64, mimeType = 'image/png') {
+            const byteCharacters = atob(base64.split(',')[1]);
+            const byteArrays = [];
+            for (let i = 0; i < byteCharacters.length; i++) {
+                byteArrays.push(byteCharacters.charCodeAt(i));
+            }
+            return new Blob([new Uint8Array(byteArrays)], { type: mimeType });
+        }
+
 
         document.addEventListener('DOMContentLoaded', startScanner);
     </script>

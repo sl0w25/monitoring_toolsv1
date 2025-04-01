@@ -36,6 +36,7 @@ class AppPanelProvider extends PanelProvider
             ->id('app')
             ->path('app')
             ->login()
+            //->theme(asset('css/filament/app.css'))
             ->registration()
             ->profile()
             ->darkMode(false)

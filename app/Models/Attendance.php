@@ -21,7 +21,8 @@ class Attendance extends Model
         'w_listed',
         'qr_number',
         'amount',
-        'time_in'
+        'time_in',
+        'image'
 
     ];
 
@@ -29,4 +30,10 @@ class Attendance extends Model
     {
         return $this->belongsTo(LocationInfo::class, 'id');
     }
+
+    public function beneficiary()
+    {
+        return $this->belongsTo(Beneficiary::class, 'qr_number', 'qr_number');
+    }
+
 }

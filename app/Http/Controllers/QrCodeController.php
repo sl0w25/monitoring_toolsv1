@@ -17,6 +17,8 @@ use App\Models\FamilyHead;
 use App\Models\LocationInfo;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Storage;
 
 class QrCodeController extends Controller
 {
@@ -31,9 +33,13 @@ class QrCodeController extends Controller
 
     public function store(Request $request)
     {
+
+        Log::info('Incoming QR Scan Request:', $request->all());
+
         $request->validate([
             'qr_number' => 'required|string',
         ]);
+
 
       //  $decrypted_qr = Crypt::decrypt($request->qr_number);
 
@@ -63,6 +69,23 @@ class QrCodeController extends Controller
              //   dd($bene->province);
 
                 DB::transaction(function () use ($bene, $request) {
+
+
+
+
+                    if ($request->imageCapture) {
+                        $imageData = $request->imageCapture;
+
+                        $filename = $request->qr_number;
+
+
+                     $store = Storage::disk('public')->put('qr_images/' . $filename, $imageData);
+
+                    }
+
+                    Log::info('Log Image:', ['filename' => $store]);
+
+
                     Attendance::create([
                         'bene_id' => $bene->bene_id,
                         'province' => $bene->province,
@@ -79,6 +102,7 @@ class QrCodeController extends Controller
                         'w_listed' => null,
                         'amount' => null,
                         'time_in' => now()->format('Y-m-d h:i A'),
+                        'image' => $store,
                     ]);
 
                    // Assistance::where('fam_id', $bene->fam_id)->update(['cost' => '5000', 'status' => 'Paid']);
