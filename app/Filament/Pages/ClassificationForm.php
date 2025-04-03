@@ -250,7 +250,7 @@ public function fillTheForm($qr_number){
         }
 
 
-        if ($beneficiary->is_hired === null) {
+        if ($beneficiary->validated_by === null && $beneficiary->status === "Present") {
 
             return response()->json([
                 'success' => true,

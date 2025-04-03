@@ -58,11 +58,6 @@ class StatsWidget extends BaseWidget
 
         return [
 
-            // Stat::make('Beneficiaries', number_format($totalEmployee))
-            //     ->description('Total beneficiaries')
-            //     ->color('success')
-            //     ->icon('heroicon-o-users'),
-
             Stat::make('Attendees', number_format($totalAttendee). ' out of '.number_format($totalEmployee))
                 ->description('Total registered beneficiaries')
                 ->color('success')
