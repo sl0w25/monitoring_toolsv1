@@ -121,8 +121,6 @@ class Login extends SimplePage
             $this->dispatch('resetCaptcha');
             $this->notapproved();
 
-           // return redirect(Filament::getLoginUrl());
-
             return app(LoginResponse::class);
         }
 
