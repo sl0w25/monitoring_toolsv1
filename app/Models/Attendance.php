@@ -26,10 +26,6 @@ class Attendance extends Model
 
     ];
 
-    public function location()
-    {
-        return $this->belongsTo(LocationInfo::class, 'id');
-    }
 
     public function beneficiary()
     {

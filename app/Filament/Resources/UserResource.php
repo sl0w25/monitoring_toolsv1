@@ -8,6 +8,7 @@ use App\Models\Beneficiary;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Filament\Forms;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
@@ -20,6 +21,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
 class UserResource extends Resource
@@ -73,11 +75,14 @@ class UserResource extends Resource
             ]),
             TextInput::make('email')->required()->email(),
             Toggle::make('is_approved')->label('Approve User')
-            ->helperText('Enable to grant user access.'),
+                ->helperText('Enable to grant user access.'),
             Toggle::make('is_lgu')
-            ->label('Swad Admin')
-            ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin())
-            ->helperText('Enable to grant admin privileges.'),
+                ->label('Swad Admin')
+                ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin())
+                ->helperText('Enable to grant admin privileges.'),
+            Hidden::make('password')
+                ->default(Hash::make('dswd12345'))
+                ->dehydrated(fn ($state, $record) => !$record || !$record->exists),
         ]);
     }
 
@@ -100,7 +105,7 @@ class UserResource extends Resource
         )
             ->columns([
                 TextColumn::make('name')->label(__('Full Name'))->sortable(),
-                TextColumn::make('office')->sortable(),
+                TextColumn::make('office')->label('Office')->sortable(),
                 // TextColumn::make('location')
                 //     ->label('Location')
                 //     ->getStateUsing(fn ($record) => "{$record->province}, {$record->municipality}, {$record->barangay}")

@@ -6,6 +6,7 @@ use App\Models\Aurora;
 use App\Models\Bataan;
 use App\Models\Beneficiary;
 use App\Models\Bulacan;
+use App\Models\Location;
 use App\Models\Nueva;
 use App\Models\Pampanga;
 use App\Models\Tarlac;
@@ -158,44 +159,81 @@ class UploadForm extends Page implements HasForms
             $csv = Reader::createFromPath($fullPath, 'r');
             $csv->setHeaderOffset(0);
 
+            $headerMap = [
+                        'LASTNAME' => 'last_name',
+                        'FIRSTNAME' => 'first_name',
+                        'MIDDLENAME' => 'middle_name',
+                        'EXT' => 'ext_name',
+                        'GENDER' => 'sex',
+                        'MONTH' => 'birth_month',
+                        'DAY' => 'birth_day',
+                        'YEAR' => 'birth_year',
+                        'CONTACT NUMBER' => 'contact_number',
+                        'BARANGAY/WITH CODE' => 'barangay',
+                        'CITY/WITH CODE' => 'municipality',
+                        'PROVINCE/WITH CODE' => 'province',
+                        'CITY_PSGC' => 'city_psgc',
+                        // Optional fields
+                        'PROV_PSGC' => 'prov_psgc',
+                        'BARANGAY_PSGC' => 'barangay_psgc',
+                        'No.' => 'bene_id', // if needed
+                    ];
 
 
-            foreach ($csv as $record) {
-              $entry =  Beneficiary::create([
-                  'last_name' => $this->convertEncoding($record['last_name'] ?? null),
-                'first_name' => $this->convertEncoding($record['first_name'] ?? null),
-                'middle_name' => $this->convertEncoding($record['middle_name'] ?? null),
-                'ext_name' => $record['ext_name'] ?? null,
-                'birth_month' => $record['birth_month'] ?? null,
-                'birth_day' => $record['birth_day'] ?? null,
-                'birth_year' => $record['birth_year'] ?? null,
-                'sex' => $record['sex'] ?? null,
-                'barangay' => $this->convertEncoding($record['barangay'] ?? null),
-                'psgc_city' => $record['psgc_city'] ?? null,
-                'municipality' => $this->convertEncoding($record['municipality'] ?? null),
-                'province' => $record['province'] ?? null,
-                'type_of_assistance' => $record['type_of_assistance'] ?? null,
-                'amount' => $record['amount'] ?? null,
-                'philsys_number' => $record['philsys_number'] ?? null,
-                'beneficiary_unique_id' => $record['beneficiary_unique_id'] ?? null,
-                'contact_number' => $record['contact_number'] ?? null,
-                'target_sector' => $record['target_sector'] ?? null,
-                'sub_category' => $record['sub_category'] ?? null,
-                'civil_status' => $record['civil_status'] ?? null,
-                'qr_number' => null,
-                'is_hired' => 0,
-                'w_listed' => 0,
-                'status' => null,
-                'validated_by' => null,
-                'ml_user' => null,
-                ]);
 
-                $entry->update(['bene_id' => $entry->id]);
-                $this->insertBene();
-                $this->inserthired();
-                $this->insertpresent();
-                $this->insertabsent();
-                $this->insertwlisted();
+           foreach ($csv as $row) {
+                $mapped = [];
+
+                foreach ($headerMap as $csvKey => $dbKey) {
+                    $mapped[$dbKey] = $row[$csvKey] ?? null;
+                }
+
+                // Convert encodings where needed
+                $mapped['last_name'] = $this->convertEncoding($mapped['last_name']);
+                $mapped['first_name'] = $this->convertEncoding($mapped['first_name']);
+                $mapped['middle_name'] = $this->convertEncoding($mapped['middle_name']);
+                $mapped['ext_name'] = $this->convertEncoding($mapped['ext_name']);
+                $mapped['barangay'] = $this->convertEncoding($mapped['barangay']);
+                $mapped['municipality'] = $this->convertEncoding($mapped['municipality']);
+
+
+                $mapped['birth_month'] = $mapped['birth_month'] ?? null;
+                $mapped['birth_day'] = $mapped['birth_day'] ?? null;
+                $mapped['birth_year'] = $mapped['birth_year'] ?? null;
+                $mapped['sex'] = $mapped['sex'] ?? null;
+                $mapped['prov_psgc'] = $mapped['prov_psgc'] ?? null;
+                $mapped['city_psgc'] = $mapped['city_psgc'] ?? null;
+                $mapped['barangay_psgc'] = $mapped['barangay_psgc'] ?? null;
+                $mapped['contact_number'] = $mapped['contact_number'] ?? null;
+
+
+                // Fill in default or optional fields
+                $mapped['type_of_assistance'] = $row['type_of_assistance'] ?? null;
+                $mapped['amount'] = $row['amount'] ?? null;
+                $mapped['philsys_number'] = $row['philsys_number'] ?? null;
+                $mapped['beneficiary_unique_id'] = $row['beneficiary_unique_id'] ?? null;
+                $mapped['target_sector'] = $row['target_sector'] ?? null;
+                $mapped['sub_category'] = $row['sub_category'] ?? null;
+                $mapped['civil_status'] = $row['civil_status'] ?? null;
+
+
+                $mapped['qr_number'] = null;
+                $mapped['is_hired'] = 0;
+                $mapped['w_listed'] = 0;
+                $mapped['status'] = null;
+                $mapped['validated_by'] = null;
+                $mapped['ml_user'] = null;
+                $mapped['bene_id'] = $mapped['bene_id'] ?? null;
+
+                //dd($mapped);
+                Beneficiary::create($mapped);
+
+
+               $this->insertBene();
+               // $this->inserthired();
+                //$this->insertpresent();
+                //$this->insertabsent();
+               // $this->insertwlisted();
             }
 
 
@@ -227,6 +265,7 @@ class UploadForm extends Page implements HasForms
     public function insertBene()
     {
 
+
         $municipalities = Beneficiary::select('municipality')
             ->distinct()
             ->get();
@@ -234,28 +273,35 @@ class UploadForm extends Page implements HasForms
 
         foreach ($municipalities as $municipality) {
 
+            $cleanMunicipality = preg_replace('/[(\/].*$/', '', $municipality->municipality);
+            $cleanMunicipality = ucwords(strtolower(trim($cleanMunicipality)));
+
+
             $counting = Beneficiary::where('municipality', $municipality->municipality)->count();
 
-                Aurora::where('municipality', $municipality->municipality)
+
+                Aurora::where('municipality', $cleanMunicipality)
                 ->update(['bene' => $counting]);
 
-                Bataan::where('municipality', $municipality->municipality)
+                Bataan::where('municipality', $cleanMunicipality)
                 ->update(['bene' => $counting]);
 
-                Bulacan::where('municipality', $municipality->municipality)
+                Bulacan::where('municipality', $cleanMunicipality)
                 ->update(['bene' => $counting]);
 
-                Pampanga::where('municipality', $municipality->municipality)
+                Pampanga::where('municipality', $cleanMunicipality)
                 ->update(['bene' => $counting]);
 
-                Nueva::where('municipality', $municipality->municipality)
+                Nueva::where('municipality', $cleanMunicipality)
                 ->update(['bene' => $counting]);
 
-                Tarlac::where('municipality', $municipality->municipality)
+                Tarlac::where('municipality', $cleanMunicipality)
                 ->update(['bene' => $counting]);
 
-                Zamb::where('municipality', $municipality->municipality)
+                Zamb::where('municipality', $cleanMunicipality)
                 ->update(['bene' => $counting]);
+
+
         }
 
         return response()->json(['message' => 'Successfully updated all municipalities']);
@@ -272,71 +318,71 @@ class UploadForm extends Page implements HasForms
 
         foreach ($municipalities as $municipality) {
 
-            $counting = Beneficiary::where('municipality', $municipality->municipality)->where('is_hired', 1)->count();
+            $counting = Beneficiary::where('municipality', $municipality->municipality)->where('paid', 1)->count();
 
 
                 Aurora::where('municipality', $municipality->municipality)
-                ->update(['is_hired' => $counting]);
+                ->update(['paid' => $counting]);
 
                 Bataan::where('municipality', $municipality->municipality)
-                ->update(['is_hired' => $counting]);
+                ->update(['paid' => $counting]);
 
                 Bulacan::where('municipality', $municipality->municipality)
-                ->update(['is_hired' => $counting]);
+                ->update(['paid' => $counting]);
 
                 Pampanga::where('municipality', $municipality->municipality)
-                ->update(['is_hired' => $counting]);
+                ->update(['paid' => $counting]);
 
                 Nueva::where('municipality', $municipality->municipality)
-                ->update(['is_hired' => $counting]);
+                ->update(['paid' => $counting]);
 
                 Tarlac::where('municipality', $municipality->municipality)
-                ->update(['is_hired' => $counting]);
+                ->update(['paid' => $counting]);
 
                 Zamb::where('municipality', $municipality->municipality)
-                ->update(['is_hired' => $counting]);
+                ->update(['paid' => $counting]);
         }
 
         return response()->json(['message' => 'Successfully updated all hired']);
     }
 
-    public function insertpresent()
-    {
+    // public function insertpresent()
+    // {
 
-        $municipalities = Beneficiary::select('municipality')
-            ->distinct()
-            ->get();
+    //     $municipalities = Beneficiary::select('municipality')
+    //         ->distinct()
+    //         ->get();
 
-      //  dd($municipalities);
+    //   //  dd($municipalities);
 
-        foreach ($municipalities as $municipality) {
+    //     foreach ($municipalities as $municipality) {
 
-            $counting = Beneficiary::where('municipality', $municipality->municipality)->where('status', "Present")->count();
+    //         $counting = Beneficiary::where('municipality', $municipality->municipality)->where('status', "Present")->count();
 
-            Aurora::where('municipality', $municipality->municipality)
-            ->update(['present' => $counting]);
+    //         Aurora::where('municipality', $municipality->municipality)
+    //         ->update(['present' => $counting]);
 
-            Bataan::where('municipality', $municipality->municipality)
-            ->update(['present' => $counting]);
+    //         Bataan::where('municipality', $municipality->municipality)
+    //         ->update(['present' => $counting]);
 
-            Bulacan::where('municipality', $municipality->municipality)
-            ->update(['present' => $counting]);
+    //         Bulacan::where('municipality', $municipality->municipality)
+    //         ->update(['present' => $counting]);
 
-            Pampanga::where('municipality', $municipality->municipality)
-            ->update(['present' => $counting]);
+    //         Pampanga::where('municipality', $municipality->municipality)
+    //         ->update(['present' => $counting]);
 
-            Nueva::where('municipality', $municipality->municipality)
-            ->update(['present' => $counting]);
+    //         Nueva::where('municipality', $municipality->municipality)
+    //         ->update(['present' => $counting]);
 
-            Tarlac::where('municipality', $municipality->municipality)
-            ->update(['present' => $counting]);
+    //         Tarlac::where('municipality', $municipality->municipality)
+    //         ->update(['present' => $counting]);
 
-            Zamb::where('municipality', $municipality->municipality)
-            ->update(['present' => $counting]);
-        }
+    //         Zamb::where('municipality', $municipality->municipality)
+    //         ->update(['present' => $counting]);
+    //     }
 
-        return response()->json(['message' => 'Successfully updated all present']);
-    }
+    //     return response()->json(['message' => 'Successfully updated all present']);
+    // }
 
     public function insertabsent()
     {
@@ -353,25 +399,25 @@ class UploadForm extends Page implements HasForms
 
 
                 Aurora::where('municipality', $municipality->municipality)
-                ->update(['absent' => $counting]);
+                ->update(['unpaid' => $counting]);
 
                 Bataan::where('municipality', $municipality->municipality)
-                ->update(['absent' => $counting]);
+                ->update(['unpaid' => $counting]);
 
                 Bulacan::where('municipality', $municipality->municipality)
-                ->update(['absent' => $counting]);
+                ->update(['unpaid' => $counting]);
 
                 Pampanga::where('municipality', $municipality->municipality)
-                ->update(['absent' => $counting]);
+                ->update(['unpaid' => $counting]);
 
                 Nueva::where('municipality', $municipality->municipality)
-                ->update(['absent' => $counting]);
+                ->update(['unpaid' => $counting]);
 
                 Tarlac::where('municipality', $municipality->municipality)
-                ->update(['absent' => $counting]);
+                ->update(['unpaid' => $counting]);
 
                 Zamb::where('municipality', $municipality->municipality)
-                ->update(['absent' => $counting]);
+                ->update(['unpaid' => $counting]);
         }
 
         return response()->json(['message' => 'Successfully updated all present']);

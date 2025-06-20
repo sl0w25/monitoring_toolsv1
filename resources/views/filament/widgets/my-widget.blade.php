@@ -24,13 +24,10 @@
                             Province
                         </th>
                         <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">
-                            Absent
+                            Unpaid
                         </th>
                         <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">
-                            Present
-                        </th>
-                        <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">
-                            Hired
+                            Paid
                         </th>
                         <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">
                             Wait Listed
@@ -47,9 +44,8 @@
                     @foreach ($provinces as $province)
                         <tr x-data="{ open: false, loading: false }" :class="open ? 'bg-gray-50' : ''">
                             <td class="px-6 py-4 whitespace-nowrap">{{ $province['name'] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $province['absent'] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $province['present'] }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap">{{ $province['hired'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $province['unpaid'] }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ $province['paid'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $province['w_listed'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">{{ $province['bene'] }}</td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -104,9 +100,8 @@
                                                 let visible = this.municipalities.slice(start, start + this.perPage);
                                                 return visible.map(municipality => ({
                                                     ...municipality,
-                                                    absent: this.formatNumber(municipality.absent),
-                                                    present: this.formatNumber(municipality.present),
-                                                    hired: this.formatNumber(municipality.hired),
+                                                    unpaid: this.formatNumber(municipality.unpaid),
+                                                    paid: this.formatNumber(municipality.paid),
                                                     w_listed: this.formatNumber(municipality.w_listed),
                                                     bene: this.formatNumber(municipality.bene)
                                                 }));
@@ -121,18 +116,16 @@
                                                 Statistics for {{ $province['name'] }}
                                             </h4>
                                             <p>Total Beneficiaries: {{ $province['bene'] }}</p>
-                                            <p>Total Absent: {{ $province['absent'] }}</p>
-                                            <p>Total Present: {{ $province['present'] }}</p>
-                                            <p>Total Hired: {{ $province['hired'] }}</p>
+                                            <p>Total Unpaid: {{ $province['unpaid'] }}</p>
+                                            <p>Total Paid: {{ $province['paid'] }}</p>
                                             <p>Total Wait Listed: {{ $province['w_listed'] }}</p>
 
                                             <table class="table-auto w-full divide-y divide-gray-200">
                                                 <thead>
                                                     <tr>
                                                     <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Municipality</th>
-                                                    <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Absent</th>
-                                                    <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Present</th>
-                                                    <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Hired</th>
+                                                    <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Unpaid</th>
+                                                    <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Paid</th>
                                                     <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Wait Listed</th>
                                                     <th class="px-6 py-3 text-left text-m font-medium text-gray-500 uppercase tracking-wider">Beneficiaries</th>
                                                     </tr>
@@ -140,10 +133,9 @@
                                                 <tbody class="bg-white divide-y divide-gray-200">
                                                     <template x-for="municipality in paginatedMunicipalities" :key="municipality.municipality">
                                                         <tr>
-                                                            <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.municipality"></td>
-                                                            <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.absent"></td>
-                                                            <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.present"></td>
-                                                            <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.is_hired"></td>
+                                                            <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.municipality.replace(/[(\/].*$/, '').trim()"></td>
+                                                            <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.unpaid"></td>
+                                                            <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.paid"></td>
                                                             <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.w_listed"></td>
                                                             <td class="px-6 py-4 whitespace-nowrap" x-text="municipality.bene"></td>
                                                         </tr>

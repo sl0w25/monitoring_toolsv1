@@ -8,9 +8,8 @@ class Nueva extends Model
 {
     protected $fillable = [
         'municipality',
-        'present',
-        'absent',
-        'is_hired',
+        'unpaid',
+        'paid',
         'w_listed',
         'bene',
     ];

@@ -63,7 +63,7 @@ class User extends Authenticatable
 
     public function isAdmin(): bool
     {
-        return $this->email =='admin@dswd.gov.ph';
+        return $this->email =='drims@dswd.gov.ph';
     }
 
     public function isApproved(): bool

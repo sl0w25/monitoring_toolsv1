@@ -20,6 +20,9 @@ class Beneficiary extends Model
        'psgc_city',
        'municipality',
        'province',
+       'prov_psgc',
+       'city_psgc',
+       'barangay_psgc',
        'type_of_assistance',
        'amount',
        'philsys_number',
@@ -29,7 +32,7 @@ class Beneficiary extends Model
        'sub_category',
        'civil_status',
        'qr_number',
-       'is_hired',
+       'paid',
        'w_listed',
        'ml_user',
        'validated_by'

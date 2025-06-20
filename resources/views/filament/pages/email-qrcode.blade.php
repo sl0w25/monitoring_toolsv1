@@ -85,6 +85,7 @@
 </head>
 <body>
     <div>
+        @foreach ($records as $location)
         <div class="h1">
             <img src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/storage/images/dswd2.png'))) }}" alt="" width="50" height="15" />
             </div>
@@ -93,7 +94,7 @@
         </div>
 
         <h4>4PS Beneficiaries</h4>
-        <p>{{$location->municipality}}</p>
+        <p>Municipality: {{$location->municipality}}</p>
 
         <h5>QR Code</h5>
 
@@ -105,6 +106,7 @@
         <h3>{{ $location->first_name }} @if($location->middle_name)
             {{ Str::substr($location->middle_name, 0, 1,) }}.
             @endif{{ $location->last_name }}</h3>
+        @endforeach
     </div>
 </body>
 </html>

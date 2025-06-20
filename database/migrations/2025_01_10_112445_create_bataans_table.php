@@ -14,11 +14,10 @@ return new class extends Migration
         Schema::create('bataans', function (Blueprint $table) {
             $table->id();
             $table->string('municipality');
-            $table->string('absent')->nullable();
-            $table->string('present')->nullable();
-            $table->string('is_hired')->nullable();
-            $table->string('w_list')->nullable();
-            $table->string('bene')->nullable();
+            $table->integer('paid');
+            $table->integer('unpaid');
+            $table->integer('w_listed');
+            $table->integer('bene');
             $table->timestamps();
         });
     }

@@ -22,12 +22,12 @@ return new class extends Migration
             $table->string('psgc');
             $table->string('contact');
             $table->string('email')->unique();
-            $table->boolean('is_admin')->default(false);
-            $table->boolean('approved')->default(false);
-            $table->boolean('swad_admin')->default(false);
+            //$table->boolean('is_admin')->default(false);
+            $table->boolean('is_approved')->default(false);
+            $table->boolean('is_lgu')->default(false);
+            $table->string('office');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->string('swad_office');
             $table->rememberToken();
             $table->timestamps();
         });

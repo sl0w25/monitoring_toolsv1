@@ -26,76 +26,68 @@ class MyWidget extends Widget
 
     public function render(): View
     {
-        $aurorabene = Beneficiary::where('province', 'Aurora')->count();
+        $aurorabene = Beneficiary::where('province', 'LIKE', 'Aurora%')->count();
         $amunicipality = Aurora::all();
-        $aurorapresent = Beneficiary::where('province', 'Aurora')->where('status', 'Present')->count();
-        $aurorahired = Beneficiary::where('province', 'Aurora')->where('is_hired', true)->count();
-        $auroraw_listed = Beneficiary::where('province', 'Aurora')->where('w_listed', true)->count();
+        $aurorapaid = Beneficiary::where('province', 'LIKE', 'Aurora%')->where('paid', true)->count();
+        $auroraw_listed = Beneficiary::where('province', 'LIKE', 'Aurora%')->where('w_listed', true)->count();
         // $aamount = Attendance::where('province', 'Aurora')->sum('amount');
         // $aformattedAmount = '₱ ' . number_format($aamount, 2);
 
-        $bataanbene = Beneficiary::where('province', 'Bataan')->count();
+        $bataanbene = Beneficiary::where('province', 'LIKE' ,'Bataan%')->count();
         $bamunicipality = Bataan::all();
-        $bataanpresent = Beneficiary::where('province', 'Bataan')->where('status', 'Present')->count();
-        $bataanhired = Beneficiary::where('province', 'Bataan')->where('is_hired', true)->count();
-        $bataanw_listed = Beneficiary::where('province', 'Bataan')->where('w_listed', true)->count();
+        $bataanpaid = Beneficiary::where('province', 'LIKE' ,'Bataan%')->where('paid', true)->count();
+        $bataanw_listed = Beneficiary::where('province', 'LIKE' ,'Bataan%')->where('w_listed', true)->count();
         // $baamount = Attendance::where('province', 'Bataan')->sum('amount');
         // $baformattedAmount = '₱ ' . number_format($baamount, 2);
 
-        $bulacanbene = Beneficiary::where('province', 'Bulacan')->count();
+        $bulacanbene = Beneficiary::where('province','LIKE', 'Bulacan%')->count();
         $bumunicipality = Bulacan::all();
-        $bulacanpresent = Beneficiary::where('province', 'Bulacan')->where('status', 'Present')->count();
-        $bulacanhired = Beneficiary::where('province', 'Bulacan')->where('is_hired', true)->count();
-        $bulacanw_listed = Beneficiary::where('province', 'Bulacan')->where('w_listed', true)->count();
+        $bulacanpaid = Beneficiary::where('province','LIKE', 'Bulacan%')->where('paid', true)->count();
+        $bulacanw_listed = Beneficiary::where('province','LIKE', 'Bulacan%')->where('w_listed', true)->count();
         // $buamount = Attendance::where('province', 'Bulacan')->sum('amount');
         // $buformattedAmount = '₱ ' . number_format($buamount, 2);
 
-        $nuevabene = Beneficiary::where('province', 'Nueva Ecija')->count();
+        $nuevabene = Beneficiary::where('province','LIKE', 'Nueva Ecija%')->count();
         $nemunicipality = Nueva::all();
-        $nuevapresent = Beneficiary::where('province', 'Nueva Ecija')->where('status', 'Present')->count();
-        $nuevahired = Beneficiary::where('province', 'Nueva Ecija')->where('is_hired', true)->count();
-        $nuevaw_listed = Beneficiary::where('province', 'Nueva Ecija')->where('w_listed', true)->count();
+        $nuevapaid = Beneficiary::where('province','LIKE', 'Nueva Ecija%')->where('paid', true)->count();
+        $nuevaw_listed = Beneficiary::where('province','LIKE', 'Nueva Ecija%')->where('w_listed', true)->count();
         // $neamount = Attendance::where('province', 'Nueva Ecija')->sum('amount');
         // $neformattedAmount = '₱ ' . number_format($neamount, 2);
 
-        $pampangabene = Beneficiary::where('province', 'Pampanga')->count();
+        $pampangabene = Beneficiary::where('province','LIKE', 'Pampanga%')->count();
         $pmunicipality = Pampanga::all();
-        $pampangapresent = Beneficiary::where('province', 'Pampanga')->where('status', 'Present')->count();
-        $pampangahired = Beneficiary::where('province', 'Pampanga')->where('is_hired', true)->count();
-        $pampangaw_listed = Beneficiary::where('province', 'Pampanga')->where('w_listed', true)->count();
+        $pampangapaid = Beneficiary::where('province','LIKE', 'Pampanga%')->where('paid', true)->count();
+        $pampangaw_listed = Beneficiary::where('province','LIKE', 'Pampanga%')->where('w_listed', true)->count();
 
         // $paamount = Attendance::where('province', 'Pampanga')->sum('amount');
         // $paformattedAmount = '₱ ' . number_format($paamount, 2);
 
-        $tarlacbene = Beneficiary::where('province', 'Tarlac')->count();
+        $tarlacbene = Beneficiary::where('province','LIKE', 'Tarlac%')->count();
         $tmunicipality = Tarlac::all();
-        $tarlacpresent = Beneficiary::where('province', 'Tarlac')->where('status', 'Present')->count();
-        $tarlachired = Beneficiary::where('province', 'Tarlac')->where('is_hired', true)->count();
-        $tarlacw_listed = Beneficiary::where('province', 'Tarlac')->where('w_listed', true)->count();
+        $tarlacpaid = Beneficiary::where('province','LIKE', 'Tarlac%')->where('paid', true)->count();
+        $tarlacw_listed = Beneficiary::where('province','LIKE', 'Tarlac%')->where('w_listed', true)->count();
         // $taamount = Attendance::where('province', 'Tarlac')->sum('amount');
         // $taformattedAmount = '₱ ' . number_format($taamount, 2);
 
-        $zambalesbene = Beneficiary::where('province', 'Zambales')->count();
+        $zambalesbene = Beneficiary::where('province','LIKE', 'Zambales%')->count();
         $zmunicipality = Zamb::all();
-        $zambalespresent = Beneficiary::where('province', 'Zambales')->where('status', 'Present')->count();
-        $zambaleshired = Beneficiary::where('province', 'Zambales')->where('is_hired', true)->count();
-        $zambalesw_listed = Beneficiary::where('province', 'Zambales')->where('w_listed', true)->count();
+        $zambalespaid = Beneficiary::where('province','LIKE', 'Zambales%')->where('paid', true)->count();
+        $zambalesw_listed = Beneficiary::where('province','LIKE', 'Zambales%')->where('w_listed', true)->count();
         // $zaamount = Attendance::where('province', 'Zambales')->sum('amount');
         // $zaformattedAmount = '₱ ' . number_format($zaamount, 2);
 
 
         $provinces = [
-
-            ['name' => 'Aurora','municipality' => $amunicipality, 'absent' => number_format($aurorabene - $aurorapresent), 'present' => number_format($aurorapresent), 'hired' => number_format($aurorahired), 'w_listed' => number_format($auroraw_listed), 'bene' => number_format($aurorabene),], //'amount' => $aformattedAmount],
-            ['name' => 'Bataan','municipality' => $bamunicipality, 'absent' => number_format($bataanbene - $bataanpresent), 'present' => number_format($bataanpresent), 'hired' => number_format($bataanhired), 'w_listed' => number_format($bataanw_listed), 'bene' => number_format($bataanbene),], //'amount' => $baformattedAmount],
-            ['name' => 'Bulacan','municipality' => $bumunicipality, 'absent' => number_format($bulacanbene - $bulacanpresent), 'present' => number_format($bulacanpresent), 'hired' => number_format($bulacanhired), 'w_listed' => number_format($bulacanw_listed), 'bene' => number_format($bulacanbene),], //'amount' => $buformattedAmount],
-            ['name' => 'Nueva Ecija','municipality' => $nemunicipality, 'absent' => number_format($nuevabene - $nuevapresent), 'present' => number_format($nuevapresent), 'hired' => number_format($nuevahired), 'w_listed' => number_format($nuevaw_listed), 'bene' => number_format($nuevabene),], //'amount' => $neformattedAmount],
-            ['name' => 'Pampanga','municipality' => $pmunicipality, 'absent' => number_format($pampangabene - $pampangapresent), 'present' => number_format($pampangapresent), 'hired' => number_format($pampangahired), 'w_listed' => number_format($pampangaw_listed), 'bene' => number_format($pampangabene),], //'amount' => $paformattedAmount],
-            ['name' => 'Tarlac','municipality' => $tmunicipality, 'absent' => number_format($tarlacbene - $tarlacpresent), 'present' => number_format($tarlacpresent), 'hired' => number_format($tarlachired), 'w_listed' => number_format($tarlacw_listed), 'bene' => number_format($tarlacbene),], //'amount' => $taformattedAmount],
-            ['name' => 'Zambales','municipality' => $zmunicipality, 'absent' => number_format($zambalesbene - $zambalespresent), 'present' => number_format($zambalespresent), 'hired' => number_format($zambaleshired), 'w_listed' => number_format($zambalesw_listed), 'bene' => number_format($zambalesbene),],// 'amount' => $zaformattedAmount],
+            ['name' => 'Aurora','municipality' => $amunicipality, 'unpaid' => number_format($aurorabene - $aurorapaid),  'paid' => number_format($aurorapaid), 'w_listed' => number_format($auroraw_listed), 'bene' => number_format($aurorabene),], //'amount' => $aformattedAmount],
+            ['name' => 'Bataan','municipality' => $bamunicipality, 'unpaid' => number_format($bataanbene - $bataanpaid),  'paid' => number_format($bataanpaid), 'w_listed' => number_format($bataanw_listed), 'bene' => number_format($bataanbene),], //'amount' => $baformattedAmount],
+            ['name' => 'Bulacan','municipality' => $bumunicipality, 'unpaid' => number_format($bulacanbene - $bulacanpaid),  'paid' => number_format($bulacanpaid), 'w_listed' => number_format($bulacanw_listed), 'bene' => number_format($bulacanbene),], //'amount' => $buformattedAmount],
+            ['name' => 'Nueva Ecija','municipality' => $nemunicipality, 'unpaid' => number_format($nuevabene - $nuevapaid),  'paid' => number_format($nuevapaid), 'w_listed' => number_format($nuevaw_listed), 'bene' => number_format($nuevabene),], //'amount' => $neformattedAmount],
+            ['name' => 'Pampanga','municipality' => $pmunicipality, 'unpaid' => number_format($pampangabene - $pampangapaid),  'paid' => number_format($pampangapaid), 'w_listed' => number_format($pampangaw_listed), 'bene' => number_format($pampangabene),], //'amount' => $paformattedAmount],
+            ['name' => 'Tarlac','municipality' => $tmunicipality, 'unpaid' => number_format($tarlacbene - $tarlacpaid),  'paid' => number_format($tarlacpaid), 'w_listed' => number_format($tarlacw_listed), 'bene' => number_format($tarlacbene),], //'amount' => $taformattedAmount],
+            ['name' => 'Zambales','municipality' => $zmunicipality, 'unpaid' => number_format($zambalesbene - $zambalespaid),  'paid' => number_format($zambalespaid), 'w_listed' => number_format($zambalesw_listed), 'bene' => number_format($zambalesbene),],// 'amount' => $zaformattedAmount],
         ];
 
-
+       // dd($provinces);
         // $municipality =[ ['name' => 'baler', 'unpaid' => 255, 'paid' => 345]];
 
         return view('filament.widgets.my-widget', [
@@ -113,11 +105,10 @@ class MyWidget extends Widget
 
         return [
             'bene_id' =>  number_format(Beneficiary::count()),
-            'male' =>  number_format(Attendance::where('sex', 'Male')->count()),
-            'female' =>  number_format(Attendance::where('sex', 'Female')->count()),
-            'present' =>  number_format(Attendance::where('status', 'Present')->count()),
-            'absent' =>  number_format(Beneficiary::where('status', null)->count()),
-            'hired' =>  number_format(Beneficiary::where('is_hired', true)->count()),
+            //'male' =>  number_format(Attendance::where('sex', 'Male')->count()),
+            //'female' =>  number_format(Attendance::where('sex', 'Female')->count()),
+            'unpaid' =>  number_format(Beneficiary::where('paid', false)->count()),
+            'paid' =>  number_format(Beneficiary::where('paid', true)->count()),
             'w_listed' =>  number_format(Beneficiary::where('w_listed', true)->count()),
 
            // 'amount' => $formattedAmount,
