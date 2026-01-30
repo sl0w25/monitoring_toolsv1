@@ -32,14 +32,14 @@ class UploadForm extends Page implements HasForms
     protected static ?string $navigationIcon = 'heroicon-o-circle-stack';
     protected static string $view = 'filament.pages.upload-form';
     protected static ?string $navigationGroup = 'Database Management';
-    protected static ?string $navigationLabel = 'Import Beneficiaries';
+    protected static ?string $navigationLabel = 'Import Participants';
     protected static ?int $navigationSort = 4;
 
     public array $upload = [];
 
     public function getTitle(): string
     {
-        return 'Import List of Beneficiaries';
+        return 'Import List of Participants';
     }
 
     public static function canAccess(): bool
@@ -59,7 +59,7 @@ class UploadForm extends Page implements HasForms
         return $form
             ->schema([
                 Section::make('')
-                    ->description('Upload a CSV file to import beneficiaries.')
+                    ->description('Upload a CSV file to import participants.')
                     ->schema([
                         FileUpload::make('upload')
                             ->label('CSV File')
@@ -162,18 +162,19 @@ class UploadForm extends Page implements HasForms
 
             foreach ($csv as $record) {
               $entry =  Beneficiary::create([
-                  'last_name' => $this->convertEncoding($record['last_name'] ?? null),
-                'first_name' => $this->convertEncoding($record['first_name'] ?? null),
-                'middle_name' => $this->convertEncoding($record['middle_name'] ?? null),
-                'ext_name' => $record['ext_name'] ?? null,
-                'birth_month' => $record['birth_month'] ?? null,
-                'birth_day' => $record['birth_day'] ?? null,
-                'birth_year' => $record['birth_year'] ?? null,
-                'sex' => $record['sex'] ?? null,
-                'barangay' => $this->convertEncoding($record['barangay'] ?? null),
-                'psgc_city' => $record['psgc_city'] ?? null,
-                'municipality' => $this->convertEncoding($record['municipality'] ?? null),
-                'province' => $record['province'] ?? null,
+                'time_stamp' => $this->convertEncoding($record['Timestamp'] ?? null),
+                'email_address' => $this->convertEncoding($record['Email Address'] ?? null),
+                'last_name' => $this->convertEncoding($record['Last Name'] ?? null),
+                'first_name' => $this->convertEncoding($record['First Name'] ?? null),
+                'middle_name' => $this->convertEncoding($record['Middle Initial'] ?? null),
+                'ext_name' => $record['Extension Name'] ?? null,
+                'division' => $record['Division'] ?? null,
+                'section' => $record['Section/Unit/Program/Center'] ?? null,
+                'position' => $record['POSITION ( PLEASE DO NOT ABBREVIATE)'] ?? null,
+                'sex' => $record['Sex'] ?? null,
+                'contact_number' => $this->convertEncoding($record['Contact Number'] ?? null),
+                'category' => $record['Category Race'] ?? null,
+                'health_consent' => $this->convertEncoding($record['HEALTH CONSENT FORM (ADD LINK OR IMAGE BELOW)'] ?? null),
                 'type_of_assistance' => $record['type_of_assistance'] ?? null,
                 'amount' => $record['amount'] ?? null,
                 'philsys_number' => $record['philsys_number'] ?? null,

@@ -7,6 +7,7 @@ use App\Models\FamilyHead;
 use App\Models\FamilyInfo;
 use App\Models\LocationInfo;
 use App\Models\User;
+use App\Mail\BeneficiaryAssigned;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Filament\Actions\Action as ActionsAction;
 use Filament\Facades\Filament;
@@ -25,6 +26,7 @@ use Filament\Tables\Table;
 use Filament\Tables\Actions\ViewAction;
 use Filament\Tables\Actions\Action;
 use Filament\Forms\Form;
+use Illuminate\Support\Collection;
 use Filament\Notifications\Notification;
 use Filament\Tables\Actions\BulkAction;
 use Filament\Tables\Actions\DeleteBulkAction;
@@ -34,6 +36,8 @@ use Illuminate\Support\Facades\Auth;
 use Livewire\WithPagination;
 use SimpleSoftwareIO\QrCode\Facades\QrCode;
 use Filament\Tables\Enums\RecordCheckboxPosition;
+use Illuminate\Support\Facades\Mail;
+
 
 class Bene extends Page implements HasForms, HasTable
 {
@@ -45,7 +49,7 @@ class Bene extends Page implements HasForms, HasTable
 
     protected static string $view = 'filament.pages.bene';
 
-    protected static ?string $navigationLabel ='Master List';
+    protected static ?string $navigationLabel ='Participants List';
 
     protected static ?int $navigationSort = 2;
 
@@ -61,7 +65,7 @@ class Bene extends Page implements HasForms, HasTable
 
     public function getTitle(): string
     {
-        return 'Master List';
+        return 'List of Participants';
     }
 
     public function updatedTableRecordsPerPage()
@@ -88,13 +92,12 @@ class Bene extends Page implements HasForms, HasTable
 
             ->columns([
                 TextColumn::make('row_number')->label('No.'),
-                TextColumn::make('province')->label('Province')->searchable(),
-                TextColumn::make('municipality')->label('Municipaity')->searchable(),
-                TextColumn::make('barangay')->label('Barangay')->searchable(),
                 TextColumn::make('first_name')->label('First Name')->searchable(),
                 TextColumn::make('middle_name')->label('Middle Name')->searchable(),
                 TextColumn::make('last_name')->label('Last Name')->searchable(),
-
+                TextColumn::make('division')->label('Division')->searchable(),
+                TextColumn::make('section')->label('Section/Unit/Program/Center')->searchable(),
+                TextColumn::make('position')->label('Position')->searchable(),
 
             ])
             ->searchable()
@@ -162,7 +165,33 @@ class Bene extends Page implements HasForms, HasTable
                         //     'Content-Type' => 'application/pdf',
                         //     'Content-Disposition' => 'inline; filename="faced_id_' . $records->id . '.pdf"',
                         // ]);
+                    }),
+
+                    BulkAction::make('notifyAdmins')
+                    ->label('Notify Admins via Email (with QR PDF)')
+                    ->action(function (Collection $records) {
+
+                        $pdf = Pdf::loadView('filament.pages.email-qrcode', ['records' => $records])->setPaper([0, 0, 85.60, 54.00], 'portrait');
+
+                        $pdfContent = $pdf->output();
+
+                        foreach ($records as $beneficiary) {
+                            Mail::to('jayson9225@gmail.com')->send(
+                                new BeneficiaryAssigned($beneficiary, $pdfContent)
+                            );
+                        }
+
+                        Notification::make()
+                            ->title('Email Sent')
+                            ->body('QR code PDF sent to the admins via email.')
+                            ->success()
+                            ->send();
                     })
+                    ->deselectRecordsAfterCompletion()
+                    ->requiresConfirmation()
+                    ->color('primary'),
+
+
             ])
 
             ->filters([
@@ -215,7 +244,7 @@ class Bene extends Page implements HasForms, HasTable
                             })
 
                             ])
-                    ->modalHeading(fn ($record) => 'Beneficiary Details with ID ' . $record->beneficiary_unique_id)
+                    ->modalHeading(fn ($record) => 'Participant Details ' . $record->beneficiary_unique_id)
                     ->modalWidth('7xl')
                     ,
             ]);
@@ -227,7 +256,7 @@ class Bene extends Page implements HasForms, HasTable
             ActionsAction::make('generate')
                 ->label('Generate Qr Code')
                 ->icon('heroicon-o-cog')
-                ->action(fn () => $this->generateQrNumbers()) // Calls CSV processing method
+                ->action(fn () => $this->generateQrNumbers())
                 ->visible(fn (): bool => Auth::check() && Auth::user()->isAdmin())
         ];
     }
@@ -244,7 +273,7 @@ class Bene extends Page implements HasForms, HasTable
             if (!$head->qr_number) {
                 do {
                     $qr_number = mt_rand(1111111111, 9999999999);
-                  //  $encrypted_qr = Crypt::encrypt($qr_number);
+
                 } while (Beneficiary::where('qr_number', $qr_number)->exists());
 
 
@@ -262,6 +291,13 @@ class Bene extends Page implements HasForms, HasTable
     }
 
 
+    //delete all data
+    public function deleter()
+    {
+        Beneficiary::query()->delete();
+
+        return redirect()->back()->with('success', 'All Beneficiary records removed successfully.');
+    }
 
 
 

@@ -10,122 +10,98 @@
         </x-filament::section>
 
         <x-filament-panels::form.actions :actions="$this->getFormActions()" />
-    @elseif(!$formVisible)
+    @else
         <div class="space-y-6" id="qr-dv" wire:key="qr-scanner">
-            <video id="interactive" class="w-100 rounded-md"></video>
+            <!-- html5-qrcode will inject camera feed here -->
+            <div id="interactive" class="w-full rounded-md"></div>
         </div>
     @endif
 </x-filament-panels::page>
 
+<!-- Dependencies -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-<script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
 <script>
-    let scanner;
+    let html5QrcodeScanner;
 
     function startScanner() {
+        const containerId = "interactive";
+        const container = document.getElementById(containerId);
+        if (!container) return;
 
-        scanner = new Instascan.Scanner({ video: document.getElementById('interactive') });
+        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+            console.log("QR Code Scanned:", decodedText);
 
-        scanner.addListener('scan', function (content) {
-            console.log('QR Code Scanned:', content);
-
-            if (scanner) {
-                scanner.stop();
-            }
-
-            document.getElementById('interactive').style.display = 'none';
+            // stop scanning temporarily
+            html5QrcodeScanner.stop().catch(err => console.error("Stop failed:", err));
 
             fetch("{{ route('hired-qr') }}", {
-                method: 'POST',
+                method: "POST",
                 headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name=\"csrf-token\"]').getAttribute('content'),
-                    'Content-Type': 'application/json'
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute("content"),
+                    "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ qr_number: content })
+                body: JSON.stringify({ qr_number: decodedText })
             })
             .then(response => response.json())
             .then(data => {
-                console.log("Parsed JSON response:", data);
+                console.log("Server response:", data);
 
                 if (data.error) {
                     Swal.fire({
-                        title: 'Error!',
+                        title: "Error!",
                         text: data.error,
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    });
-
-                    document.getElementById('interactive').style.display = 'block';
-                    startScanner();
-
-
+                        icon: "error",
+                        confirmButtonText: "OK"
+                    }).then(() => startScanner());
                 } else if(data.success) {
                     Swal.fire({
-                        title: 'Record Found!',
-                        html: `Beneficiary: ${data.data.name}<br>Address: ${data.data.province},\n${data.data.municipality},\n${data.data.barangay}`,
-                        icon: 'success',
-                        confirmButtonText: 'OK'
+                        title: "Record Found!",
+                        html: `Beneficiary: ${data.data.name}<br>Address: ${data.data.province}, ${data.data.municipality}, ${data.data.barangay}`,
+                        icon: "success",
+                        confirmButtonText: "OK"
+                    }).then(() => {
+                        // Dispatch Livewire event to fill the form
+                        Livewire.dispatch("fillTheForm", { qr_number: decodedText });
+                        startScanner();
                     });
-
-                    Livewire.on('setSearchQuery', (data) => {
-                        console.log("Livewire event received:", data);
-                    });
-
-                    console.log("Dispatching Livewire event: setSearchQuery with QR:", content);
-                    console.log(Livewire);
-
-                    // Livewire.dispatch("saveImage", { imageCapture: imageData });
-                    Livewire.dispatch("fillTheForm", { qr_number: content });
-
                 }
             })
-            .catch(error => {
-                console.error("Error parsing JSON:", error);
+            .catch(err => {
+                console.error("Fetch error:", err);
                 Swal.fire({
-                    title: 'Server Error!',
-                    text: 'Something went wrong.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
+                    title: "Server Error!",
+                    text: "Something went wrong.",
+                    icon: "error",
+                    confirmButtonText: "OK"
+                }).then(() => startScanner());
+            });
+        };
 
-                startScanner();
+        const config = { fps: 10, qrbox: 250 };
+        html5QrcodeScanner = new Html5Qrcode(containerId);
+
+        html5QrcodeScanner.start(
+            { facingMode: "environment" },
+            config,
+            qrCodeSuccessCallback
+        ).catch(err => {
+            console.error("Camera start failed:", err);
+            Swal.fire({
+                title: "Camera Error",
+                text: "Unable to access camera: " + err,
+                icon: "error",
+                confirmButtonText: "OK"
             });
         });
-
-        Instascan.Camera.getCameras()
-            .then(function (cameras) {
-                if (cameras.length > 0) {
-                    let backCamera = cameras.find(camera => camera.name.toLowerCase().includes('back')) || cameras[0];
-                    scanner.start(backCamera);
-                } else {
-                    console.error('No cameras found.');
-                    Swal.fire({
-                        title: 'No Camera Found!',
-                        text: 'Please ensure your camera is connected.',
-                        icon: 'warning',
-                        confirmButtonText: 'OK'
-                    });
-                }
-            })
-            .catch(function (err) {
-                console.error('Camera access error:', err);
-                Swal.fire({
-                    title: 'Camera Error!',
-                    text: 'Unable to access camera: ' + err,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            });
     }
 
-    document.addEventListener('DOMContentLoaded', startScanner);
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        console.log("Event listeners loaded...");
+    document.addEventListener("DOMContentLoaded", () => {
+        startScanner();
 
-        Livewire.on("swal", (event) => {
-            console.log("SweetAlert Event Received:", event);
+        // Livewire SweetAlert listener
+        Livewire.on("swal", event => {
             Swal.fire({
                 title: event.title || "Notification",
                 text: event.text || "",
@@ -134,22 +110,9 @@
             });
         });
 
-
-    });
-</script>
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
+        // Livewire reload page listener
         Livewire.on("reloadPage", () => {
-            console.log("🔄 Reloading page...");
-            setTimeout(() => {
-                location.reload();
-            }, 500);
+            setTimeout(() => location.reload(), 500);
         });
     });
 </script>
-
-
-
-
-
-

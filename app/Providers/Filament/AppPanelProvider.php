@@ -94,7 +94,7 @@ class AppPanelProvider extends PanelProvider
     {
         return [
             StatsWidget::class,
-            MyWidget::class,
+          //  MyWidget::class,
         ];
     }
 }

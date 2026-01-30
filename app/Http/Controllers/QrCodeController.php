@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\BeneficiaryAssigned;
 use App\Models\Assistance;
 use App\Models\Aurora;
 use App\Models\Bataan;
@@ -155,9 +156,6 @@ class QrCodeController extends Controller
 
     }
 
-
-
-
     public function destroy($id)
     {
         $attendance = Attendance::findOrFail($id);
@@ -165,4 +163,6 @@ class QrCodeController extends Controller
 
         return redirect()->back()->with('success', 'Attendance record removed successfully.');
     }
+
+
 }

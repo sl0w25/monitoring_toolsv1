@@ -21,6 +21,11 @@ class AttendanceForm extends Page implements HasTable
 
     protected static ?string $navigationLabel ='Attendance List';
 
+        public function getTitle(): string
+    {
+        return 'List of Attendee';
+    }
+
     public function table(Table $table): Table
     {
         return $table
