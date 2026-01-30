@@ -228,7 +228,9 @@ class Bene extends Page implements HasForms, HasTable
                     ->label('View Details')
                     ->modalContent(function ($record) {
                         return view('filament.modals.family_details', [
-                            'familyHead' => Beneficiary::where('bene_id', $record->id)->first(),
+                            'familyHead' => Beneficiary::where('id', $record->id)
+                                                        ->where('province', $record->province)
+                                                        ->first(),
                         ]);
 
                     })
@@ -241,7 +243,8 @@ class Bene extends Page implements HasForms, HasTable
                                 return route('faced.print', [
                                     'id' => $record->id,
                                 ]);
-                            })
+                                return "javascript:window.open('$url', '_blank');";
+                            }),
 
                             ])
                     ->modalHeading(fn ($record) => 'Participant Details ' . $record->beneficiary_unique_id)

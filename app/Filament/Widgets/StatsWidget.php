@@ -41,15 +41,15 @@ class StatsWidget extends BaseWidget
             ->when($province, fn (Builder $query) => $query->where('province', $province))
             ->count();
 
-        $totalTransaction = Attendance::where('is_hired', "hired")
+        $totalTransaction = Beneficiary::where('paid', true)
             ->when($province, fn (Builder $query) => $query->whereHas('beneficiary', fn ($q) => $q->where('province', $province)))
             ->count();
 
-        $totalWaitListed = Attendance::where('w_listed', "yes")
+        $totalWaitListed = Beneficiary::where('w_listed', true)
             ->when($province, fn (Builder $query) => $query->whereHas('beneficiary', fn ($q) => $q->where('province', $province)))
             ->count();
 
-        $totalAttendee = Attendance::query()
+        $totalAttendee = Beneficiary::query()
             ->when($province, fn (Builder $query) => $query->whereHas('beneficiary', fn ($q) => $q->where('province', $province)))
             ->count();
 
@@ -58,12 +58,12 @@ class StatsWidget extends BaseWidget
 
         return [
 
-            Stat::make('Attendees', number_format($totalAttendee). ' out of '.number_format($totalEmployee))
+            Stat::make('Attendees', number_format($totalEmployee))
                 ->description('Total registered beneficiaries')
                 ->color('success')
                 ->icon('heroicon-o-users'),
 
-            Stat::make('Hired Beneficiaries', number_format($totalTransaction))
+            Stat::make('Paid Beneficiaries', number_format($totalTransaction))
           //  Stat::make('Hired Beneficiaries', sprintf('%s or %s%%', number_format($totalTransaction), $formattedAverage))
                 ->description('Total hired beneficiaries')
                 ->color('success')

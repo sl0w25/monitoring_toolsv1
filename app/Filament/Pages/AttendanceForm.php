@@ -15,11 +15,16 @@ class AttendanceForm extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static ?string $navigationIcon = 'heroicon-o-check-badge';
 
     protected static string $view = 'filament.pages.attendance-form';
 
-    protected static ?string $navigationLabel ='Attendance List';
+    protected static ?string $navigationLabel ='Paid Beneficiary List';
+
+    public function getTitle(): string
+    {
+        return 'List of Paid Beneficiaries';
+    }
 
         public function getTitle(): string
     {

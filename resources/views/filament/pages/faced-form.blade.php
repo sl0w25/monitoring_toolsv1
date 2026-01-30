@@ -93,7 +93,7 @@
         </div>
 
         <h4>4PS Beneficiaries</h4>
-        <p>Municipality: {{$location->municipality}}</p>
+        <p>{{$location->municipality}}</p>
 
         <h5>QR Code</h5>
 

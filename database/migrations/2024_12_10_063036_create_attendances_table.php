@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
-            $table->string('fam_id');
+            $table->string('bene_id');
             $table->string('province');
             $table->string('municipality');
             $table->string('barangay');
@@ -21,12 +21,14 @@ return new class extends Migration
             $table->string('middle_name');
             $table->string('last_name');
             $table->string('ext_name')->nullable();
-            $table->string('qr_number');
+            $table->string('sex');
             $table->string('status')->nullable();
             $table->string('is_hired')->nullable();
             $table->string('w_listed')->nullable();
+            $table->string('qr_number');
             $table->string('amount');
             $table->string('time_in');
+            $table->string('image');
             $table->timestamps();
         });
     }
