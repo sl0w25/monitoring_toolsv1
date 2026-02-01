@@ -21,10 +21,6 @@ class AttendanceForm extends Page implements HasTable
 
     protected static ?string $navigationLabel ='Paid Beneficiary List';
 
-    public function getTitle(): string
-    {
-        return 'List of Paid Beneficiaries';
-    }
 
         public function getTitle(): string
     {

@@ -2,20 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Mail\BeneficiaryAssigned;
-use App\Models\Assistance;
-use App\Models\Aurora;
-use App\Models\Bataan;
-use App\Models\Bulacan;
-use App\Models\Nueva;
-use App\Models\Pampanga;
-use App\Models\Tarlac;
-use App\Models\Zamb;
+use App\Http\Requests\FunRunQrSearchRequest;
 use Illuminate\Http\Request;
 use App\Models\Attendance;
-use App\Models\Beneficiary;
-use App\Models\FamilyHead;
-use App\Models\LocationInfo;
+use App\Models\FunRunRegistration;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -37,28 +27,28 @@ class QrCodeController extends Controller
 
         Log::info('Incoming QR Scan Request:', $request->all());
 
-        $request->validate([
-            'qr_number' => 'required|string',
-        ]);
-
 
       //  $decrypted_qr = Crypt::decrypt($request->qr_number);
 
-        $bene = Beneficiary::where('qr_number', $request->qr_number)->first();
+       $request->validate([
+            'qr_number' => 'required|string',
+        ]);
+
+        $participants = FunRunRegistration::where('qr_number', $request->qr_number)->first();
 
 
-        if (!$bene) {
+        if (!$participants) {
             return response()->json([
-                'error' => 'Beneficiary not found!',
+                'error' => 'Participants not found!',
                 'attendances' => Attendance::latest()->get(),
             ]);
         }
-
-        $attendanceRecord = Attendance::where('bene_id', $bene->bene_id)->first();
+       
+        $attendanceRecord = Attendance::where('dswd_id', $participants->dswd_id)->first();
       // dd($attendanceRecord);
         if ($attendanceRecord) {
             return response()->json([
-                'error' => 'Oops!<br>' . $bene->first_name . ' ' . $bene->last_name .
+                'error' => 'Oops!<br>' . $participants->first_name . ' ' . $participants->last_name .
                             ' was already log on ' . $attendanceRecord->time_in,
                 'attendances' => Attendance::latest()->get(),
             ]);
@@ -66,85 +56,42 @@ class QrCodeController extends Controller
         } else{
 
             try {
-
-             //   dd($bene->province);
-
-                DB::transaction(function () use ($bene, $request) {
-
-
-
-
+                DB::transaction(function () use ($participants, $request) {
+                    $store = null; // default value
                     if ($request->imageCapture) {
                         $imageData = $request->imageCapture;
-
                         $filename = $request->qr_number;
-
-
-                     $store = Storage::disk('public')->put('qr_images/' . $filename, $imageData);
+                        $store = Storage::disk('public')->put('qr_images/' . $filename, $imageData);
 
                     }
-
                     Log::info('Log Image:', ['filename' => $store]);
 
-
                     Attendance::create([
-                        'bene_id' => $bene->bene_id,
-                        'province' => $bene->province,
-                        'municipality' => $bene->municipality,
-                        'barangay' => $bene->barangay,
-                        'first_name' => $bene->first_name,
-                        'middle_name' => $bene->middle_name,
-                        'last_name' => $bene->last_name,
-                        'ext_name' => $bene->ext_name,
-                        'sex' => $bene->sex,
+                        'dswd_id' => $participants->dswd_id,
+                        'first_name' => $participants->first_name,
+                        'middle_name' => $participants->middle_name,
+                        'last_name' => $participants->last_name,
+                        'ext_name' => $participants->ext_name,
+                        'division' => $participants->division,
+                        'section' => $participants->section,
+                        'sex' => $participants->sex,
                         'qr_number' => $request->qr_number,
                         'status' => 'Present',
-                        'is_hired' => null,
-                        'w_listed' => null,
-                        'amount' => null,
                         'time_in' => now()->format('Y-m-d h:i A'),
-                        'image' => $store,
+                        'image' => $store ?? null,
                     ]);
 
+                 
                    // Assistance::where('fam_id', $bene->fam_id)->update(['cost' => '5000', 'status' => 'Paid']);
-                    Beneficiary::where('bene_id', $bene->bene_id)->update(['status' => 'Present']);
+                  //  FunRunRegistration::where('bene_id', $participants->dswd_id)->update(['status' => 'Present']);
 
-
-                if ($bene->province == 'Aurora') {
-                    Aurora::where('municipality', $bene->municipality)->increment('present');
-                    Aurora::where('municipality', $bene->municipality)->decrement('absent');
-                }
-                if ($bene->province == 'Bulacan') {
-                    Bulacan::where('municipality', $bene->municipality)->increment('present');
-                    Bulacan::where('municipality', $bene->municipality)->decrement('absent');
-                }
-                if ($bene->province == 'Bataan') {
-                    Bataan::where('municipality', $bene->municipality)->increment('present');
-                    Bataan::where('municipality', $bene->municipality)->decrement('absent');
-                }
-                if ($bene->province == 'Nueva Ecija') {
-                    Nueva::where('municipality', $bene->municipality)->increment('present');
-                    Nueva::where('municipality', $bene->municipality)->decrement('absent');
-                }
-                if ($bene->province == 'Pampanga') {
-                    Pampanga::where('municipality', $bene->municipality)->increment('present');
-                    Pampanga::where('municipality', $bene->municipality)->decrement('absent');
-                }
-                if ($bene->province == 'Tarlac') {
-                    Tarlac::where('municipality', $bene->municipality)->increment('present');
-                    Tarlac::where('municipality', $bene->municipality)->decrement('absent');
-                }
-                if ($bene->province == 'Zambales') {
-                    Zamb::where('municipality', $bene->municipality)->increment('present');
-                    Zamb::where('municipality', $bene->municipality)->decrement('absent');
-                }
                 });
 
 
                 return response()->json([
-                    'message' => 'Successfully Identified!<br>Name: ' . $bene->first_name . ' ' .
-                                 ($bene->middle_name ? $bene->middle_name . ' ' : '') .
-                                 $bene->last_name . '<br>Barangay: ' . $bene->barangay,
+                    'message' => 'Successfully Identified!<br>Name: ' . $participants->first_name . ' ' .
+                                 ($participants->middle_name ? $participants->middle_name . ' ' : '') .
+                                 $participants->last_name . '<br>Division: ' . $participants->division,
                     'attendances' => Attendance::latest()->get(),
                 ]);
             } catch (\Exception $e) {

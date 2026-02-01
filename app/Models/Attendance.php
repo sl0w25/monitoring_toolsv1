@@ -7,29 +7,26 @@ use Illuminate\Database\Eloquent\Model;
 class Attendance extends Model
 {
     protected $fillable = [
-        'bene_id',
-        'province',
-        'municipality',
-        'barangay',
+        'dswd_id',
         'first_name',
         'middle_name',
         'last_name',
         'ext_name',
+        'division',
+        'section',
         'sex',
         'status',
-        'is_hired',
-        'w_listed',
         'qr_number',
-        'amount',
         'time_in',
         'image'
 
     ];
 
 
-    public function beneficiary()
-    {
-        return $this->belongsTo(Beneficiary::class, 'qr_number', 'qr_number');
-    }
-
 }
+
+
+    // public function beneficiary()
+    // {
+    //     return $this->belongsTo(FunRunRegistration::class, 'qr_number', 'qr_number');
+    // }

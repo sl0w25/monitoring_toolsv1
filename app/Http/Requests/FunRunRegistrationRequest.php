@@ -11,7 +11,7 @@ class FunRunRegistrationRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,6 +22,7 @@ class FunRunRegistrationRequest extends FormRequest
     public function rules(): array
     {
         return [
+           'dswd_id' => 'required|string|max:10',
            'first_name' => 'required|string|max:255',
             'middle_name' => 'nullable|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -33,7 +34,8 @@ class FunRunRegistrationRequest extends FormRequest
             'emergency_contact_name' => 'required|string|max:255',
             'emergency_contact_number' => 'required|string|max:20',
             'race_category' => 'required|string',
-            'health_consent_form' => 'required|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'health_consent_form' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
+            'qr_number' => 'nullable'
         ];
     }
 }

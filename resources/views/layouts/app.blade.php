@@ -99,6 +99,28 @@
             padding-bottom: 10px;
         }
 
+        .section-address {
+            color: #555;
+            text-align: center;
+            border-bottom: 2px solid #174655;
+            display: inline-block;
+            margin-bottom: 5px;
+            width: 100%;
+            padding-bottom: 10px;
+            grid-column: span 4;
+        }
+
+        /* Attendance Form */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        .full-width { grid-column: span 2; }
+
+        .full-width2 { grid-column: span 4; }
+
         label {
             font-weight: bold;
             font-size: 0.9rem;

@@ -24,7 +24,9 @@ return new class extends Migration
             $table->string('emergency_contact_name');
             $table->string('emergency_contact_number');
             $table->string('race_category');
-            $table->string('health_consent_form'); // file path
+            $table->string('health_consent_form')->nullable(); // file path
+            $table->string('qr_number');
+            $table->string('dswd_id');
             $table->timestamps();
         });
     }

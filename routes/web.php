@@ -22,9 +22,22 @@ use Illuminate\Http\Request;
 //Route::get('/download-all', [PdfController::class, 'downloadAll']);
 
 
-Route::get('/fun-run/register', [FunRunRegistrationController::class, 'create'])->name('funrun.create');
+Route::get('/fun-run/register', [FunRunRegistrationController::class, 'create'])->name('fun-run.create');
 
-Route::post('/fun-run/register', [FunRunRegistrationController::class, 'store'])->name('funrun.store');
+Route::post('/fun-run/register', [FunRunRegistrationController::class, 'store'])->name('fun-run.store');
+
+Route::get('/fun-run/success', [FunRunRegistrationController::class, 'show'])->name('fun-run.show');
+
+Route::get('/fun-run/{registration}/pdf', [FunRunRegistrationController::class, 'downloadPdf'])->name('fun-run.pdf');
+
+Route::get('/fun-run/print-image/{id}', [FunRunRegistrationController::class, 'printImage'])->name('fun-run.print-image');
+
+Route::get('/fun-run/qr', [FunRunRegistrationController::class, 'showQrForm'])->name('fun-run.qr');
+
+Route::post('/fun-run/qr', [FunRunRegistrationController::class, 'searchQr'])->name('fun-run.qr.search');
+
+    
+
 
 Route::get('/bene/{id}/print/{trans_no?}', [PdfController::class, 'print'])->name('faced.print');
 

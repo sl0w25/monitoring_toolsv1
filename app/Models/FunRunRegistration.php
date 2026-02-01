@@ -22,5 +22,11 @@ class FunRunRegistration extends Model
         'emergency_contact_number',
         'race_category',
         'health_consent_form',
+        'qr_number',
+        'dswd_id'
     ];
+
+    protected $casts = [
+    'qr_number' => 'string',
+];
 }
