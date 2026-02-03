@@ -22,7 +22,7 @@ use Illuminate\Http\Request;
 //Route::get('/download-all', [PdfController::class, 'downloadAll']);
 
 
-Route::get('/fun-run/register', [FunRunRegistrationController::class, 'create'])->name('fun-run.create');
+Route::get('/', [FunRunRegistrationController::class, 'create'])->name('fun-run.create');
 
 Route::post('/fun-run/register', [FunRunRegistrationController::class, 'store'])->name('fun-run.store');
 
@@ -36,18 +36,18 @@ Route::get('/fun-run/qr', [FunRunRegistrationController::class, 'showQrForm'])->
 
 Route::post('/fun-run/qr', [FunRunRegistrationController::class, 'searchQr'])->name('fun-run.qr.search');
 
-    
+
 
 
 Route::get('/bene/{id}/print/{trans_no?}', [PdfController::class, 'print'])->name('faced.print');
 
-Route::post('/', [QrCodeController::class, 'store'])->name('scan.qr');
+Route::post('/attendance', [QrCodeController::class, 'store'])->name('scan.qr');
 
 Route::post('/admin/bene/deleteall', [QrCodeController::class, 'deleter']);
 
 Route::post('/admin/classification-form', [ClassificationForm::class, 'setSearchQuery'])->name('hired-qr');
 
-Route::get('/', [QrCodeController::class, 'index'])->name('qr-scanner');
+Route::get('/attendance', [QrCodeController::class, 'index'])->name('qr-scanner');
 
 Route::get('/attendances', function () {
     return response()->json([

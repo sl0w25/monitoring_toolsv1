@@ -15,11 +15,11 @@ class AttendanceForm extends Page implements HasTable
 {
     use InteractsWithTable;
 
-    protected static ?string $navigationIcon = 'heroicon-o-check-badge';
+    protected static ?string $navigationIcon = 'heroicon-o-arrow-right-end-on-rectangle';
 
     protected static string $view = 'filament.pages.attendance-form';
 
-    protected static ?string $navigationLabel ='Paid Beneficiary List';
+    protected static ?string $navigationLabel ='Attendance List';
 
 
         public function getTitle(): string
@@ -66,11 +66,10 @@ class AttendanceForm extends Page implements HasTable
             })
             ->searchable(),
             ImageColumn::make('image')
-            ->label('Image')
-            ->getStateUsing(fn ($record) => asset("storage/{$record->image}"))
+            ->label('MOVs')
+            ->getStateUsing(fn ($record) => $record->image ? asset("storage/{$record->image}") : null)
             ->width(150)
             ->height(100)
-
         ]);
     }
 }

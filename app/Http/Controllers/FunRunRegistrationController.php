@@ -16,101 +16,8 @@ class FunRunRegistrationController extends Controller
 {
     public function create()
     {
-        // Divisions and sections
-        $divisions = [
-        "ADMINISTRATIVE DIVISION"=> [
-                    "OFFICE OF THE DIVISION CHIEF",
-                    "PROCUREMENT AND BAC SECTION",
-                    "PROPERTY AND SUPPLY SECTION",
-                    "RECORDS AND ARCHIVES MANAGEMENT SECTION",
-                    "BUILDING AND GROUND SECTION",
-                    "GENERAL SERVICES SECTION"
-                ],
-                "HUMAN RESOURCE AND MANAGEMENT DIVISION"=> [
-                    "OFFICE OF THE DIVISION CHIEF",
-                    "LEARNING AND DEVELOPMENT SECTION",
-                    "HUMAN RESOURCE WELFARE SECTION",
-                    "PERSONNEL SECTION",
-                    "CLINIC",
-                    "HRPPMS"
-                ],
-                "FINANCE MANAGEMENT DIVISION"=> [
-                    "OFFICE OF THE DIVISION CHIEF",
-                    "ACCOUNTING SECTION",
-                    "ACCOUNTING LIQUIDATION",
-                    "BUDGET SECTION",
-                    "BUDGET REVIEWER",
-                    "CASH SECTION",
-                    "CASH RELEASING",
-                    "COMMISSION ON AUDIT (COA)",
-                    "HYBRID"
-                ],
-                "DISASTER RESPONSE AND MANAGEMENT DIVISION"=> [
-                    "OFFICE OF THE DIVISION CHIEF",
-                    "DISASTER RESPONSE AND REHABILITATION SECTION",
-                    "DISASTER RESPONSE AND INFORMATION MANAGEMENT SECTION",
-                    "REGIONAL RESOURCE OPERATION SECTION"
-                ],
-                "POLICY AND PLANS DIVISION"=> [
-                    "OFFICE OF THE DIVISION CHIEF",
-                    "REGIONAL INFORMATION AND COMMUNICATION MANAGEMENT SECTION",
-                    "NATIONAL HOUSEHOLD TARGETING SYSTEM",
-                    "STANDARDS SECTION",
-                    "RESEARCH AND DEVELOPMENT SECTION"
-                ],
-                "PROTECTIVE SERVICES DIVISION"=> [
-                    "OFFICE OF THE DIVISION CHIEF",
-                    "COMMUNITY BASED SECTION",
-                    "CRISIS INTERVENTION SECTION",
-                    "SUPPLEMENTAL FEEDING PROGRAM",
-                    "SOCIAL PENSION",
-                    "MINORS TRAVELLING ABROAD",
-                    "CENTER BASED SERVICES SECTION"
-                ],
-                "PROMOTIVE SERVICES DIVISION"=> [
-                    "OFFICE OF THE DIVISION CHIEF",
-                    "SUSTAINABLE LIVELIHOOD PROGRAM",
-                    "KALAHI"
-                ],
-                "PANTAWID PAMILYANG PILIPINO PROGRAM"=> [
-                    "OFFICE OF THE DIVISION CHIEF",
-                    "RPMO",
-                    "ICT PANTAWID"
-                ],
-                "INNOVATIONS DIVISION"=> [
-                    "OFFICE OF THE DIVISION CHIEF",
-                    "STU",
-                    "TBTP",
-                    "PAG-ABOT",
-                    "EPAHP"
-                ],
-                "OFFICE OF THE FIELD DIRECTOR"=> [
-                    "OFFICE OF THE REGIONAL DIRECTOR",
-                    "OFFICE OF THE ASSISTANT REGIONAL DIRECTOR FOR ADMINISTRATION",
-                    "OFFICE OF THE ASSISTANT REGIONAL DIRECTOR FOR OPERATIONS",
-                    "TAAORSS"
-                ],
-                "SWAD OFFICES"=> [
-                    "SWAD - AURORA",
-                    "SWAD - BATAAN",
-                    "SWAD - BULACAN",
-                    "SWAD - NUEVA ECIJA",
-                    "SWAD - TARLAC",
-                    "SWAD - PAMPANGA",
-                    "SWAD - ZAMBALES"
-                ],
-                "CRCF's"=> [
-                    "AMORV",
-                    "HAVEN",
-                    "RHFG",
-                    "RRCY",
-                    "RSCC",
-                    "THFW",
-                    "TLC"
-                ]
-        ];
 
-        return view('fun_run_registration', compact('divisions'));
+        return view('fun_run_registration');
 
     }
 
@@ -137,7 +44,7 @@ class FunRunRegistrationController extends Controller
 
             return view('fun_run_success', compact('registration', 'qrSvg'));
         }
-  
+
 
         public function store(FunRunRegistrationRequest $request)
         {
@@ -148,14 +55,14 @@ class FunRunRegistrationController extends Controller
                         ->withInput()
                         ->withErrors(['dswd_id' => 'This DSWD ID is already registered.']);
                }
-               
+
             do {
                 $qrNumber = (string) mt_rand(1000000000, 9999999999);
             } while (FunRunRegistration::where('qr_number', $qrNumber)->exists());
 
              $data['qr_number'] = (string) $qrNumber;
 
-            
+
             if ($request->hasFile('health_consent_form')) {
                 $data['health_consent_form'] = $request->file('health_consent_form')
                     ->store('health_forms', 'public');
@@ -178,7 +85,7 @@ class FunRunRegistrationController extends Controller
 
             if (!$registration) {
                 return redirect()->back()
-                    ->withErrors(['dswd_id' => 'DSWD ID not found.'])
+                    ->withErrors(['dswd_id' => 'DSWD ID not found. Please Register first!'])
                     ->withInput();
             }
 
@@ -213,48 +120,51 @@ class FunRunRegistrationController extends Controller
                 6
             );
 
-            // Create Image Manager
+            // Image Manager
             $manager = new ImageManager(new Driver());
 
-            // Create blank canvas (CR80 Portrait @300dpi ≈ 638x1016)
-            $img = $manager->create(638, 1016)->fill('#ffffff');
+            // ✅ Load template instead of blank canvas
+            $img = $manager->read(
+                public_path('storage/templates/qr_template.png')
+            );
 
-            // Read QR image
+            // Read QR
             $qrImage = $manager->read(
                 base64_decode($qrBase64)
             );
 
-            // Resize QR (optional)
-            $qrImage->resize(350, 350);
+            // Resize QR
+            $qrImage->resize(1000, 1000);
 
             // Place QR
-            $img->place($qrImage, 'top-center', 0, 80);
+            $img->place($qrImage, 'top-center', 0, 440);
 
             // Add Name
             $img->text(
                 strtoupper($registration->first_name . ' ' . $registration->last_name),
-                319,
-                550,
+                $img->width() / 2,
+                1550,
                 function ($font) {
                     $font->file(public_path('fonts/Roboto-Regular.ttf'));
-                    $font->size(36);
+                    $font->size(60);
                     $font->color('#000000');
                     $font->align('center');
+                    $font->valign('bottom');
                 }
             );
 
             // Add Division
-            $img->text(
-                $registration->division,
-                319,
-                620,
-                function ($font) {
-                    $font->file(public_path('fonts/Roboto-Regular.ttf'));
-                    $font->size(22);
-                    $font->color('#333333');
-                    $font->align('center');
-                }
-            );
+            // $img->text(
+            //     $registration->division,
+            //     $img->width() / 1.67,
+            //     1400,
+            //     function ($font) {
+            //         $font->file(public_path('fonts/Roboto-Regular.ttf'));
+            //         $font->size(30);
+            //         $font->color('#333333');
+            //         $font->align('center');
+            //     }
+            // );
 
             return response($img->toPng())
                 ->header('Content-Type', 'image/png')
@@ -264,8 +174,8 @@ class FunRunRegistrationController extends Controller
                     $registration->first_name . '_' .
                     $registration->last_name . '.png"'
                 );
-
         }
+
 
 
 

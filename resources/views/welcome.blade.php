@@ -15,9 +15,12 @@
             justify-content: center;
             align-items: center;
         }
+        #interactive video {
+            transform: scaleX(-1); /* horizontal flip */
+        }
 
         /* Scanner Box Overlay */
-        .scanner-box {
+        /* .scanner-box {
             position: absolute;
             top: 50%;
             left: 50%;
@@ -30,11 +33,11 @@
             background: rgba(255, 255, 255, 0.1);
             box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
             animation: pulse 2s infinite alternate ease-in-out;
-            pointer-events: none; /* clicks pass through */
-        }
+            pointer-events: none; }/* clicks pass through */
+
 
         /* Scanner Line Animation */
-        .scanner-line {
+        /* .scanner-line {
             position: absolute;
             width: 100%;
             height: 3px;
@@ -42,7 +45,7 @@
             top: 0;
             left: 0;
             animation: scan 2s infinite linear;
-        }
+        } */ */
 
         @keyframes pulse {
             0% { transform: translate(-50%, -50%) scale(1); }
@@ -55,9 +58,15 @@
         }
 
         /* Responsive Tweaks */
-        @media (max-width: 1133px) { .scanner-box { max-width: 260px; max-height: 180px; } }
-        @media (max-width: 768px) { .scanner-box { max-width: 270px; max-height: 180px; } }
-        @media (max-width: 480px) { .scanner-box { max-width: 170px; max-height: 100px; } }
+        @media (max-width: 1133px) { .scanner-box { max-width: 270px; max-height: 180px; } }
+        @media (max-width: 768px) { .scanner-box { max-width: 270px; max-height: 180px; }
+     #interactive video {
+            transform: scaleX(-1); /* horizontal flip */
+        }}
+        @media (max-width: 480px) { .scanner-box { max-width: 220px; max-height: 100px;  }
+        #interactive video {
+            transform: scaleX(-1); /* horizontal flip */
+        }}
     </style>
 </head>
 <body class="bg-gray-700 text-gray-800 font-poppins bg-blend-multiply bg-cover bg-fixed" style="background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.4) 120%) #989898;">
@@ -71,6 +80,7 @@
             <div class="video-container">
                 <!-- Html5-Qrcode will inject the video here -->
                 <div id="interactive" class="w-full rounded-md"></div>
+                <canvas id="qrCaptureCanvas" class="hidden"></canvas>
 
                 <!-- Overlay -->
                 <div id="scannerBox" class="scanner-box">
@@ -98,22 +108,20 @@
                     <thead class="bg-gray-800 text-white">
                         <tr>
                             <th class="border border-gray-400 px-2 py-1">#</th>
-                            <th class="border border-gray-400 px-2 py-1">First Name</th>
-                            <th class="border border-gray-400 px-2 py-1">Middle Name</th>
-                            <th class="border border-gray-400 px-2 py-1">Last Name</th>
-                            <th class="border border-gray-400 px-2 py-1">Ext</th>
+                            <th class="border border-gray-400 px-2 py-1">Full Name</th>
+                            <th class="border border-gray-400 px-2 py-1">Division</th>
                             <th class="border border-gray-400 px-2 py-1">Time In</th>
+                            <th class="border border-gray-400 px-2 py-1">Category</th>
                         </tr>
                     </thead>
                     <tbody id="attendanceTableBody" class="bg-white">
                         @forelse ($attendances as $attendance)
                             <tr class="border border-gray-300">
                                 <td class="px-2 py-1">{{ $attendances->total() - ($attendances->perPage() * ($attendances->currentPage() - 1)) - $loop->index }}</td>
-                                <td class="px-2 py-1">{{ $attendance->first_name }}</td>
-                                <td class="px-2 py-1">{{ $attendance->middle_name }}</td>
-                                <td class="px-2 py-1">{{ $attendance->last_name }}</td>
-                                <td class="px-2 py-1">{{ $attendance->ext_name }}</td>
+                                <td class="px-2 py-1">{{ $attendance->first_name }}  {{ $attendance->last_name }}</td>
+                                <td class="px-2 py-1">{{ $attendance->division }}</td>
                                 <td class="px-2 py-1">{{ $attendance->time_in }}</td>
+                                <td class="px-2 py-1">{{ $attendance->race_category }}</td>
                             </tr>
                         @empty
                             <tr>
@@ -134,91 +142,153 @@
 
 <!-- HTML5 QR Code Library -->
 <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+
 <script>
+    let isScanning = false;       // Lock
+    let lastScanned = "";        // Last QR
+    let scanCooldown = 2000;     // 2 seconds cooldown
+
     function addAttendanceRow(attendance) {
         const tbody = document.querySelector("#attendanceTableBody");
         const row = document.createElement("tr");
+
         row.innerHTML = `
             <td class="px-2 py-1">${attendance.id}</td>
-            <td class="px-2 py-1">${attendance.first_name}</td>
-            <td class="px-2 py-1">${attendance.middle_name || ""}</td>
-            <td class="px-2 py-1">${attendance.last_name}</td>
-            <td class="px-2 py-1">${attendance.ext_name || ""}</td>
-            <td class="px-2 py-1">${attendance.time_in}</td>
+            <td class="px-2 py-1">${attendance.first_name || " " || attendance.last_name || " " || attendance.ext}</td>
+            <td class="px-2 py-1">${attendance.division}</td>
+            <td class="px-2 py-1">${attendance.time_in || ""}</td>
+            <td class="px-2 py-1">${attendance.race_category}</td>
         `;
+
         tbody.prepend(row);
     }
 
+
     function refreshTable() {
         fetch("{{ route('attendances.list') }}")
-            .then(response => response.json())
+            .then(res => res.json())
             .then(data => {
+
                 const tbody = document.querySelector("#attendanceTableBody");
-                const existingIds = new Set([...tbody.children].map(row => row.children[0].textContent));
-                data.attendances.data.forEach(attendance => {
-                    if (!existingIds.has(attendance.id.toString())) {
-                        addAttendanceRow(attendance);
-                    }
-                });
-                document.querySelector(".mt-4").innerHTML = data.attendances.links;
+                tbody.innerHTML = "";
+
+                data.attendances.data.forEach(addAttendanceRow);
+
+                document.querySelector(".mt-4").innerHTML =
+                    data.attendances.links;
+
             })
-            .catch(error => console.error("Error fetching paginated data:", error));
+            .catch(console.error);
     }
 
-    function startScanner() {
-        const errorContainer = document.getElementById('error-container');
-        const successContainer = document.getElementById('success-container');
-        const scanSound = document.getElementById('scanSound');
 
-        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
-            console.log('QR Code Scanned:', decodedText);
-            scanSound.play();
+ function startScanner() {
+    const errorBox = document.getElementById('error-container');
+    const successBox = document.getElementById('success-container');
+    const scanSound = document.getElementById('scanSound');
 
-            errorContainer.classList.add('hidden');
-            successContainer.classList.add('hidden');
+    const onScanSuccess = (decodedText) => {
+        if (isScanning) return;
 
-            const formData = new FormData();
-            formData.append('qr_number', decodedText);
+        isScanning = true;
+        const currentScan = decodedText;
 
-            fetch("{{ route('scan.qr') }}", {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                },
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    errorContainer.classList.remove('hidden');
-                    errorContainer.innerHTML = data.error;
-                } else {
-                    successContainer.classList.remove('hidden');
-                    successContainer.innerHTML = data.message;
-                    refreshTable(data.attendances);
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                errorContainer.classList.remove('hidden');
-                errorContainer.innerHTML = error.message;
-            });
-        };
+        scanSound.play();
+        errorBox.classList.add('hidden');
+        successBox.classList.add('hidden');
 
-        const config = { fps: 10, qrbox: { width: 350, height: 270 } };
-        const html5QrcodeScanner = new Html5Qrcode("interactive");
+         // Capture the video frame
+        const video = document.querySelector("#interactive video");
+        const canvas = document.getElementById("qrCaptureCanvas");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const context = canvas.getContext("2d");
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        html5QrcodeScanner.start(
-            { facingMode: "environment" },
-            config,
-            qrCodeSuccessCallback
-        ).catch(err => {
-            console.error("Camera start failed:", err);
-            alert("Camera access error: " + err);
+        // Convert to base64 image (PNG)
+        const imageData = canvas.toDataURL("image/png"); // "data:image/png;base64,..."
+
+        const formData = new FormData();
+        formData.append('qr_number', currentScan);
+        formData.append('imageCapture', imageData);
+
+
+        fetch("{{ route('scan.qr') }}", {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.error) {
+                errorBox.classList.remove('hidden');
+                errorBox.innerHTML = data.error;
+                setTimeout(() => { errorBox.classList.add('hidden'); }, 3000);
+            } else {
+                successBox.classList.remove('hidden');
+                successBox.innerHTML = data.message;
+                refreshTable();
+                setTimeout(() => { successBox.classList.add('hidden'); }, 3000);
+            }
+            isScanning = false; // unlock for next scan
+        })
+        .catch(err => {
+            console.error(err);
+            errorBox.classList.remove('hidden');
+            errorBox.innerHTML = "Network error";
+            setTimeout(() => { errorBox.classList.add('hidden'); }, 3000);
+            isScanning = false;
         });
-    }
+    };
 
-    document.addEventListener('DOMContentLoaded', startScanner);
+    const config = { fps: 30, qrbox: 270 };
+
+    const scanner = new Html5Qrcode("interactive");
+
+    // ✅ Get available cameras and prefer rear camera
+    Html5Qrcode.getCameras().then(cameras => {
+        if (cameras && cameras.length) {
+            // Choose rear camera if possible
+            let cameraId = cameras[0].id; // fallback to first camera
+            for (let cam of cameras) {
+                if (cam.label.toLowerCase().includes('back') || cam.label.toLowerCase().includes('rear')) {
+                    cameraId = cam.id;
+                    break;
+                }
+            }
+
+            scanner.start(cameraId, config, onScanSuccess)
+                .catch(err => {
+                    console.error(err);
+                    alert("Camera error: " + err);
+                });
+        } else {
+            alert("No camera found");
+        }
+    }).catch(err => {
+        console.error(err);
+        alert("Camera error: " + err);
+    });
+}
+
+
+
+document.addEventListener('DOMContentLoaded', startScanner);
+
+
+function captureImage() {
+    const video = document.querySelector("#interactive video");
+    const canvas = document.createElement("qrCaptureCanvas");
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    // Get base64 string
+    const imageBase64 = canvas.toDataURL("image/png"); // data:image/png;base64,...
+    return imageBase64;
+}
+
 </script>
+
 </body>
 </html>

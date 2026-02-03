@@ -34,12 +34,14 @@
 
         /* Hero Section */
         header {
-            background: linear-gradient(rgba(194, 217, 247, 0.85), rgba(0, 78, 102, 0.85)),
+            background: linear-gradient(rgba(101, 170, 212, 0.85), rgba(0, 78, 102, 0.85)),
                         url('data:image/png;base64,{{ base64_encode(file_get_contents(public_path('/storage/images/anniv.jpg'))) }}');
             background-color: var(--dswd-blue);
+            background-size: cover;
+            background-position: center;
             color: white;
             text-align: center;
-            padding: 100px 20px 150px;
+            padding: 80px 20px 120px;
             border-bottom: 6px solid var(--gold-solid);
         }
 
@@ -67,7 +69,7 @@
 
         .theme-tagline {
             font-style: italic;
-            font-size: 1.4rem;
+            font-size: 1.8rem;
             color: var(--gold-solid);
             max-width: 700px;
             margin: 0 auto;
@@ -79,6 +81,7 @@
             margin: -80px auto 50px;
             padding: 0 20px;
         }
+
 
         /* Section Cards */
         .card {
@@ -113,12 +116,11 @@
         /* Attendance Form */
         .form-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr 1fr;
+            grid-template-columns: repeat(4, 1fr);
             gap: 20px;
         }
 
         .full-width { grid-column: span 2; }
-
         .full-width2 { grid-column: span 4; }
 
         label {
@@ -129,7 +131,7 @@
             margin-bottom: 5px;
         }
 
-        input, select {
+        input, select, textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #ddd;
@@ -138,7 +140,7 @@
         }
 
         .btn-submit {
-            background: var(--dswd-red);
+            background: linear-gradient(135deg, #9c2828, #750e0ed3);
             color: white;
             border: none;
             padding: 15px 40px;
@@ -148,9 +150,24 @@
             width: 100%;
             margin-top: 20px;
             transition: background 0.3s;
+            border-radius: 20px;
         }
 
-        .btn-submit:hover { background: #a00000; }
+
+        .privacy-link {
+            color: #003366 !important;
+            text-decoration: underline !important;
+            cursor: pointer !important;
+        }
+
+        .privacy-link:hover { opacity: 0.8; }
+
+        .btn-submit:hover {
+            background: #a00000;
+            background-position: right center;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+        }
 
         /* Schedule Table */
         table {
@@ -172,11 +189,71 @@
             font-size: 0.8rem;
         }
 
+        .sex-group {
+                display: flex;
+                flex-direction: row; /* horizontal line */
+                gap: 12px;           /* space between options */
+                flex-wrap: wrap;      /* wrap to next line if too narrow */
+                align-items: center;
+            }
+
+            .sex-group label {
+                display: flex;
+                align-items: center;
+                gap: 6px; /* space between radio and text */
+            }
+
+
+        /* ===================== */
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .main-container { padding: 0 15px; }
+            h1 { font-size: 2.5rem; }
+            .theme-tagline { font-size: 1.5rem; }
+        }
+
         @media (max-width: 768px) {
             .form-grid { grid-template-columns: 1fr; }
             .full-width { grid-column: span 1; }
+            .full-width2 { grid-column: span 1; }
             h1 { font-size: 2rem; }
+            .theme-tagline { font-size: 1.2rem; }
+            header { padding: 60px 20px 100px; }
+            table, th, td { font-size: 0.85rem; }
+            .form-grid { grid-template-columns: 1fr;}
+            .full-width, .full-width2 { grid-column: span 1; }
+            select { width: 100%; font-size: 0.95rem; padding: 10px; }
+            label { font-size: 0.9rem; }
         }
+
+        @media (max-width: 480px) {
+            header { padding: 50px 15px 80px; }
+            .anniversary-logo { width: 140px; height: 140px; }
+            h1 { font-size: 1.6rem; }
+            .theme-tagline { font-size: 1rem; }
+            .card { padding: 20px; }
+            input, select, textarea { padding: 10px; font-size: 0.9rem; }
+            .btn-submit { padding: 12px 20px; font-size: 1rem; width: 100%;}
+            .button-group { flex-direction: column; gap: 15px; }
+            .sex-group {
+                    display: flex;
+                    flex-direction: row; /* horizontal line */
+                    gap: 60px;           /* space between options */
+                    flex-wrap: wrap;      /* wrap to next line if too narrow */
+                    align-items: center;
+                }
+
+                .sex-group label {
+                    display: flex;
+                    align-items: center;
+                    gap: 0px; /* space between radio and text */
+                }
+                 #interactive video {
+                    transform: scaleX(-1); /* horizontal flip */
+                }
+
+        }
+
     </style>
 
     @yield('styles')
@@ -189,7 +266,7 @@
         <div class="anniversary-logo">
             @yield('header-logo')
         </div>
-        <h1>@yield('header-title', 'DIAMOND JUBILEE')</h1>
+        <h1>@yield('header-title', 'DSWD 75TH ANNIVERSARY')</h1>
         <p class="theme-tagline">@yield('header-tagline', '75 Years of Maagap at Mapagkalingang Serbisyo')</p>
     </header>
 
@@ -200,7 +277,7 @@
     <footer>
         <p><strong>DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT FIELD OFFICE III</strong><br>
         Government Center, Maimpis, City of San Fernando, Pampanga, 2000, Philippines<br>
-        © 1951 - 2026</p>
+        © 1951 - 2026 POWERED BY DRIMS</p>
     </footer>
 
     @yield('scripts')

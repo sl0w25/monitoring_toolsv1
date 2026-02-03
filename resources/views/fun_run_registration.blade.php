@@ -10,16 +10,17 @@
 
 
     <section class="card">
-        <h2 class="section-title">FUN RUN (DSWD 75TH ANNIVERSARY)</h2>
-        <p stly="margin-top: 20px;"><i><small>In celebration of the <b>Department of Social Welfare and Development’s (DSWD) 75th Founding Anniversary,</b> the <b>Disaster Response Management Division (DRMD)</b> will spearhead a <b>Fun Run Activity on 25 February 2026 (Wednesday), 4:00 AM</b> at the <b>Diosdado Macapagal Government Center, Maimpis, City of San Fernando, Pampanga.</b><br><br>
+        <h2 class="section-title">TAKBO PARA SA BAGONG HENERASYON</h2>
+        <p stly="margin-top: 20px;"><i><medium>In celebration of the <b>Department of Social Welfare and Development’s (DSWD) 75th Founding Anniversary,</b> the <b>Disaster Response Management Division (DRMD)</b> will spearhead a <b>Fun Run Activity on 25 February 2026 (Wednesday), 4:00 AM</b> at the <b>Diosdado Macapagal Government Center, Maimpis, City of San Fernando, Pampanga.</b><br><br>
 
                 This activity aims to promote health, wellness, camaraderie, and solidarity among the staff of <b>DSWD Field Office III – Central Luzon</b> while commemorating this milestone anniversary.<br><br>
 
                 Participation Guidelines<br><br>
 
                 All interested staff are encouraged to join and actively participate. Participants are required to: Prepare their own <b>Personnel Locator Slip (PLS)</b> or <b>Request for Authority  to Travel (RFA)</b> documents. Accomplish and sign a <b>Health Consent Form</b> . Proper running attire and hydration are advised. </i></p>
-            </small>
+            </medium>
     </section>
+
 
     <section class="card">
         <h2 class="section-title">Registration</h2>
@@ -43,7 +44,7 @@
                     <div>
                         <label>First Name</label>
                         <input type="text" name="first_name" value="{{ old('first_name') }}" placeholder="Juan" required>
-                      
+
 
                     </div>
                     <div>
@@ -93,9 +94,9 @@
                     <div class="full-width">
                         <label>Sex</label>
 
-                        <div style="display: flex; gap: 16px;">
+                        <div class="sex-group">
                             <label style="display: flex; align-items: center; gap: 6px;">
-                                <input type="radio" name="sex" value="Male" required>
+                                <input type="radio" name="sex" value="Male" required width="23px">
                                 Male
                             </label>
 
@@ -118,29 +119,86 @@
                     </div>
 
                     <div class="full-width2">
-                        <label style="display: block; margin-bottom: 8px;">Race Category</label>
+                       <label style="display: block; margin-bottom: 8px;">
+                            Race Category
+                            <span id="openMapModal" class="privacy-link text-blue-800 underline cursor-pointer hover:opacity-80" tabindex="0" role="button">
+                                (click here to view the map)
+                            </span>
+                        </label>
 
-                        <div style="display: flex; flex-direction: column; gap: 10px; align-items: flex-start;">
-                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; white-space: nowrap;">
-                                <input type="radio" name="race_category" value="5km_20_35" required>
-                                5 km – 20 to 35 years old
-                            </label>
 
-                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; white-space: nowrap;">
-                                <input type="radio" name="race_category" value="5km_36_above">
-                                5 km – 36 years old and above
-                            </label>
+                        <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
 
-                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; white-space: nowrap;">
-                                <input type="radio" name="race_category" value="3km_20_35">
-                                3 km – 20 to 35 years old
-                            </label>
+                        <label style="
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            padding: 14px 16px;
+                            border: 0px solid #ddd;
+                            border-radius: 10px;
+                            cursor: pointer;
+                            background: #fff;
+                            width: 100%;
+                            -webkit-tap-highlight-color: transparent;
+                        ">
+                            <input type="radio" name="race_category" value="5km_20_35" required
+                                style="width:20px;height:20px;">
+                            <span>5 km – 20 to 35 years old</span>
+                        </label>
 
-                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer; white-space: nowrap;">
-                                <input type="radio" name="race_category" value="3km_36_above">
-                                3 km – 36 years old and above
-                            </label>
-                        </div>
+                        <label style="
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            padding: 14px 16px;
+                            border: 0px solid #ddd;
+                            border-radius: 10px;
+                            cursor: pointer;
+                            background: #fff;
+                            width: 100%;
+                            -webkit-tap-highlight-color: transparent;
+                        ">
+                            <input type="radio" name="race_category" value="5km_36_above"
+                                style="width:20px;height:20px;">
+                            <span>5 km – 36 years old and above</span>
+                        </label>
+
+                        <label style="
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            padding: 14px 16px;
+                            border: 0px solid #ddd;
+                            border-radius: 10px;
+                            cursor: pointer;
+                            background: #fff;
+                            width: 100%;
+                            -webkit-tap-highlight-color: transparent;
+                        ">
+                            <input type="radio" name="race_category" value="3km_20_35"
+                                style="width:20px;height:20px;">
+                            <span>3 km – 20 to 35 years old</span>
+                        </label>
+
+                        <label style="
+                            display: flex;
+                            align-items: center;
+                            gap: 12px;
+                            padding: 14px 16px;
+                            border: 0px solid #ddd;
+                            border-radius: 10px;
+                            cursor: pointer;
+                            background: #fff;
+                            width: 100%;
+                            -webkit-tap-highlight-color: transparent;
+                        ">
+                            <input type="radio" name="race_category" value="3km_36_above"
+                                style="width:20px;height:20px;">
+                            <span>3 km – 36 years old and above</span>
+                        </label>
+
+                    </div>
+
                     </div>
 
                     <div class="full-width2">
@@ -150,16 +208,122 @@
 
                     <div class="full-width2">
                         <div style="margin-top: 20px; margin-bottom: 20px;">
-                            <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-                                <input type="checkbox" name="data_privacy" id="dataPrivacyCheck" required
+
+                            <div style="display: flex; align-items: center; gap: 10px;">
+
+                                <input type="checkbox"
+                                    name="data_privacy"
+                                    id="dataPrivacyCheck"
+                                    required
                                     style="width: 18px; height: 18px; border: 1px solid #ddd; border-radius: 4px; cursor: pointer;">
-                                <span style="font-size: 0.95rem; color: #555;">
+
+                                <label for="dataPrivacyCheck"
+                                    style="font-size: 0.95rem; color: #555; cursor: pointer;">
                                     I have read and agree to the
-                                    <a href="#" id="openPrivacyModal" style="color: #003366; text-decoration: underline;">Data Privacy Notice</a>.
+                                </label>
+
+                                <span id="openPrivacyModal" class="privacy-link text-blue-800 underline cursor-pointer hover:opacity-80" tabindex="0" role="button">
+                                    Data Privacy Notice
                                 </span>
-                            </label>
+
+
+                            </div>
+
                         </div>
                     </div>
+
+                    <!-- MAP MODAL -->
+                    <div id="mapModal" style="
+                            display: none;
+                            position: fixed;
+                            top: 0; left: 0; right: 0; bottom: 0;
+                            background: rgba(0,0,0,0.6);
+                            justify-content: center;
+                            align-items: center;
+                            z-index: 9999;
+                        ">
+                        <div style="
+                                background: #fff;
+                                max-width: 800px;
+                                width: 90%;
+                                padding: 20px;
+                                border-radius: 8px;
+                                position: relative;
+                                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+                                max-height: 80vh;
+                                overflow-y: auto;
+                            ">
+                            <h2 style="margin-top: 0; color: #003366;">Race Map</h2>
+                            <!-- LEGEND -->
+                            <div style="
+                                margin: 10px 0 15px;
+                                padding: 10px;
+                                background: #f5f7fa;
+                                border-left: 4px solid #003366;
+                                border-radius: 4px;
+                                font-size: 14px;
+                            ">
+                            <strong>Legend:</strong>
+
+                            <ul style="
+                                list-style:none;
+                                padding:0;
+                                margin:0;
+                                display:flex;
+                                flex-wrap:wrap;
+                                gap:15px;
+                                align-items:center;
+                            ">
+
+                                <li style="display:flex;align-items:center;gap:6px;">
+                                    <span style="width:12px;height:10px;background:#b30202;border-radius:50%;display:inline-block;"></span>
+                                    Ribbon Station
+                                </li>
+
+                                <li style="display:flex;align-items:center;gap:6px;">
+                                    <span style="width:12px;height:12px;background:#bbff00;border-radius:50%;display:inline-block;"></span>
+                                    Water Station
+                                </li>
+
+                                <li style="display:flex;align-items:center;gap:6px;">
+                                    <span style="width:12px;height:12px;background:#007bff;border-radius:50%;display:inline-block;"></span>
+                                    Race Track
+                                </li>
+
+                                <li style="display:flex;align-items:center;gap:6px;">
+                                    <span style="font-size:14px;">📍</span>
+                                    Start / Finish Area
+                                </li>
+
+                            </ul>
+
+
+                            </div>
+                            <iframe
+                                src="https://www.google.com/maps/d/u/0/embed?mid=128al8iHvnKKm_qMdMTijzG__NXLz8n0&ehbc=2E312F&noprof=1"
+                                width="100%"
+                                height="500"
+                                style="border:0;"
+                                allowfullscreen=""
+                                loading="lazy">
+                            </iframe>
+                            <button id="closeMapModal" type="button" style="
+                                    position: absolute;
+                                    top: 10px;
+                                    right: 10px;
+                                    background: #cc0000;
+                                    color: #fff;
+                                    border: none;
+                                    padding: 6px 12px;
+                                    border-radius: 4px;
+                                    cursor: pointer;
+                                ">
+                                Close
+                            </button>
+                        </div>
+                    </div>
+
+
 
 
                     <!-- MODAL -->
@@ -187,7 +351,7 @@
                             <p style="color: #555; line-height: 1.5;">
                                 The DSWD FO III complies with the Data Privacy Act of 2012 and is committed in protecting your privacy. For the purpose of this activity, the DRMD will collect personal information for the purpose of documentation. Information collected will be stored for as long as necessary. By filling out the form, you are consenting to the collection, use and retention of your personal information.
                             </p>
-                            <button id="closePrivacyModal" style="
+                            <button id="closePrivacyModal" type="button" style="
                                     position: absolute;
                                     top: 10px;
                                     right: 10px;
@@ -211,6 +375,7 @@
             </form>
     </section>
 
+
     <section class="card">
         <h2 class="section-title">Schedule of Activities</h2>
         <table>
@@ -221,9 +386,12 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>04:00 AM</td><td><strong>Attendance</strong> - Bren Z. Guiao Convention Center</td></tr>
-                <tr><td>10:00 AM</td><td><strong>Awarding of the Winner</strong> - Bren Z. Guiao Convention Center</td></tr>
-                <tr><td>05:00 PM</td><td><strong>Closing</strong> - Sports Complex</td></tr>
+                <tr><td>04:00 AM</td><td><strong>Attendance</strong> - DSWD Field Office III</td></tr>
+                <tr><td>04:00 AM</td><td><strong>Opening Prayer - Welcome Message</strong> - DSWD Field Office III</td></tr>
+                <tr><td>04:45 AM</td><td><strong>Zumba - Route Map</strong> - DSWD Field Office III</td></tr>
+                <tr><td>05:00 AM</td><td><strong>Fun Run Starts</strong> - DSWD Field Office III</td></tr>
+                <tr><td>07:30 AM</td><td><strong>Fun Run Ends - Cool Down Execise</strong> - DSWD Field Office III</td></tr>
+                <tr><td>07:30 AM</td><td><strong>Awarding Ceremony</strong> - DSWD Field Office III</td></tr>
             </tbody>
         </table>
     </section>
@@ -231,31 +399,24 @@
 
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', function () {
 
-    const divisionSelect = document.getElementById('division')
-    const sectionSelect  = document.getElementById('section')
-    const openModal = document.getElementById('openPrivacyModal');
+    const divisionSelect = document.getElementById('division');
+    const sectionSelect  = document.getElementById('section');
+
+    const openModal  = document.getElementById('openPrivacyModal');
     const closeModal = document.getElementById('closePrivacyModal');
-    const modal = document.getElementById('privacyModal');
+    const modal      = document.getElementById('privacyModal');
+    const mapModal = document.getElementById('mapModal');
+    const openMap = document.getElementById('openMapModal');
+    const closeMap = document.getElementById('closeMapModal');
 
-    // const regionSelect = document.getElementById('region')
-    // const provinceSelect = document.getElementById('province')
-    // const municipalitySelect = document.getElementById('municipality')
-    // const barangaySelect = document.getElementById('barangay')
-    // const API = 'https://psgc.gitlab.io/api'
+    const oldDivision = "{{ old('division') }}";
+    const oldSection  = "{{ old('section') }}";
 
-      @if($errors->any())
-        const firstErrorField = document.querySelector('.form-grid input[name], .form-grid select[name]');
-        @foreach($errors->keys() as $field)
-            const el = document.querySelector(`[name="{{ $field }}"]`);
-            if(el) {
-                el.focus();
-                return; // stop at first error field
-            }
-        @endforeach
-    @endif
-
+    /* ===============================
+       SECTION OPTIONS
+    =============================== */
 
     const sectionOptions = {
         "ADMINISTRATIVE DIVISION": [
@@ -348,142 +509,114 @@ document.addEventListener('DOMContentLoaded', () => {
             "THFW",
             "TLC"
         ]
-    }
-
-    /* ---------------- Division → Section ---------------- */
-
-    resetSelect(sectionSelect)
-
-    divisionSelect.addEventListener('change', () => {
-        resetSelect(sectionSelect)
-
-        const division = divisionSelect.value
-
-        if (sectionOptions[division]) {
-            sectionSelect.disabled = false
-
-            sectionOptions[division].forEach(section => {
-                const option = document.createElement('option')
-                option.value = section
-                option.textContent = section
-                sectionSelect.appendChild(option)
-            })
-        }
-    })
-
-    openModal.addEventListener('click', (e) => {
-        e.preventDefault();
-        modal.style.display = 'flex';
-    });
-
-    closeModal.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-
-    // Optional: close modal when clicking outside content
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) modal.style.display = 'none';
-    });
+    };
 
 
-
-
-    // /* ---------------- Region → Province → Municipality → Barangay ---------------- */
-
-    // fetch(`${API}/regions/`)
-    //     .then(res => res.json())
-    //     .then(data => {
-    //         data.forEach(region => {
-    //             regionSelect.appendChild(
-    //                 new Option(region.name, region.code)
-    //             )
-    //         })
-    //     })
-
-    // regionSelect.addEventListener('change', () => {
-    //     resetSelect(provinceSelect)
-    //     resetSelect(municipalitySelect)
-    //     resetSelect(barangaySelect)
-
-    //     fetch(`${API}/regions/${regionSelect.value}/provinces/`)
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             provinceSelect.disabled = false
-    //             data.forEach(p => {
-    //                 provinceSelect.appendChild(
-    //                     new Option(p.name, p.code)
-    //                 )
-    //             })
-    //         })
-    // })
-
-    // provinceSelect.addEventListener('change', () => {
-    //     resetSelect(municipalitySelect)
-    //     resetSelect(barangaySelect)
-
-    //     fetch(`${API}/provinces/${provinceSelect.value}/cities-municipalities/`)
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             municipalitySelect.disabled = false
-    //             data.forEach(m => {
-    //                 municipalitySelect.appendChild(
-    //                     new Option(m.name, m.code)
-    //                 )
-    //             })
-    //         })
-    // })
-
-    // municipalitySelect.addEventListener('change', () => {
-    //     resetSelect(barangaySelect)
-
-    //     fetch(`${API}/cities-municipalities/${municipalitySelect.value}/barangays/`)
-    //         .then(res => res.json())
-    //         .then(data => {
-    //             barangaySelect.disabled = false
-    //             data.forEach(b => {
-    //                 barangaySelect.appendChild(
-    //                     new Option(b.name, b.code)
-    //                 )
-    //             })
-    //         })
-    // })
-                //     {{-- <div class="full-width">
-                //     <label>Region</label>
-                //     <select id="region" required>
-                //         <option value="">-- SELECT --</option>
-                //     </select>
-                // </div>
-
-                // <div class="full-width">
-                //     <label>Province</label>
-                //     <select id="province" required disabled>
-                //         <option value="">-- SELECT --</option>
-                //     </select>
-                // </div>
-
-                // <div class="full-width">
-                //     <label>Municipality</label>
-                //     <select id="municipality" required disabled>
-                //         <option value="">-- SELECT --</option>
-                //     </select>
-                // </div>
-
-                // <div class="full-width">
-                //     <label>Barangay</label>
-                //     <select id="barangay" required disabled>
-                //         <option value="">-- SELECT --</option>
-                //     </select>
-                // </div> --}}
-                // </div>
-
-    /* ---------------- Helper ---------------- */
-
-       
+    /* ===============================
+       HELPERS
+    =============================== */
 
     function resetSelect(select) {
-        select.innerHTML = '<option value="">-- SELECT --</option>'
-        select.disabled = true
+        select.innerHTML = '<option value="">-- SELECT --</option>';
+        select.disabled = true;
     }
 
-})
+    function populateSection(division, selected = null) {
+
+        resetSelect(sectionSelect);
+
+        if (!sectionOptions[division]) return;
+
+        sectionSelect.disabled = false;
+
+        sectionOptions[division].forEach(section => {
+
+            const opt = document.createElement('option');
+
+            opt.value = section;
+            opt.textContent = section;
+
+            if (section === selected) {
+                opt.selected = true;
+            }
+
+            sectionSelect.appendChild(opt);
+        });
+    }
+
+
+    /* ===============================
+       DIVISION → SECTION
+    =============================== */
+
+    resetSelect(sectionSelect);
+
+    // Restore after validation error
+    if (oldDivision) {
+        divisionSelect.value = oldDivision;
+        populateSection(oldDivision, oldSection);
+    }
+
+    // Change handler
+    divisionSelect.addEventListener('change', function () {
+        populateSection(this.value);
+    });
+
+
+    /* ===============================
+       MODAL HANDLING
+    =============================== */
+
+    if (openModal && modal && closeModal) {
+
+        openModal.addEventListener('click', function () {
+            modal.style.display = 'flex';
+        });
+
+        closeModal.addEventListener('click', function () {
+            modal.style.display = 'none';
+        });
+
+        modal.addEventListener('click', function (e) {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
+
+      //map modal
+
+      if (openMap && mapModal && closeMap) {
+        openMap.addEventListener('click', function () {
+            mapModal.style.display = 'flex';
+        });
+
+        closeMap.addEventListener('click', function () {
+            mapModal.style.display = 'none';
+        });
+
+        mapModal.addEventListener('click', function(e) {
+            if (e.target === mapModal) {
+                mapModal.style.display = 'none';
+            }
+        });
+    }
+
+
+    /* ===============================
+       AUTO-FOCUS FIRST ERROR
+    =============================== */
+
+    @if($errors->any())
+        const firstError = document.querySelector('.form-grid [name]');
+        if (firstError) {
+            firstError.focus();
+        }
+    @endif
+
+});
+
+
 </script>
+
+

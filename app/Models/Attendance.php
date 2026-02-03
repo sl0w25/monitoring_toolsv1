@@ -18,15 +18,17 @@ class Attendance extends Model
         'status',
         'qr_number',
         'time_in',
+        'race_category',
         'image'
 
     ];
 
 
+    public function beneficiary()
+    {
+        return $this->belongsTo(FunRunRegistration::class, 'qr_number', 'qr_number');
+    }
+
 }
 
 
-    // public function beneficiary()
-    // {
-    //     return $this->belongsTo(FunRunRegistration::class, 'qr_number', 'qr_number');
-    // }

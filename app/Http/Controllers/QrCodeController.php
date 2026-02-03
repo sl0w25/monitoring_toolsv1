@@ -30,9 +30,9 @@ class QrCodeController extends Controller
 
       //  $decrypted_qr = Crypt::decrypt($request->qr_number);
 
-       $request->validate([
-            'qr_number' => 'required|string',
-        ]);
+    //    $request->validate([
+    //         'qr_number' => 'required|string',
+    //     ]);
 
         $participants = FunRunRegistration::where('qr_number', $request->qr_number)->first();
 
@@ -43,13 +43,14 @@ class QrCodeController extends Controller
                 'attendances' => Attendance::latest()->get(),
             ]);
         }
-       
-        $attendanceRecord = Attendance::where('dswd_id', $participants->dswd_id)->first();
+
+        $attendanceRecord = Attendance::where('dswd_id', $participants->dswd_id)->exists();
+        $timeIn = Attendance::where('dswd_id', $participants->dswd_id)->value('time_in');
       // dd($attendanceRecord);
         if ($attendanceRecord) {
             return response()->json([
                 'error' => 'Oops!<br>' . $participants->first_name . ' ' . $participants->last_name .
-                            ' was already log on ' . $attendanceRecord->time_in,
+                            ' was already log on '.$timeIn,
                 'attendances' => Attendance::latest()->get(),
             ]);
 
@@ -57,14 +58,22 @@ class QrCodeController extends Controller
 
             try {
                 DB::transaction(function () use ($participants, $request) {
-                    $store = null; // default value
-                    if ($request->imageCapture) {
-                        $imageData = $request->imageCapture;
-                        $filename = $request->qr_number;
-                        $store = Storage::disk('public')->put('qr_images/' . $filename, $imageData);
 
-                    }
-                    Log::info('Log Image:', ['filename' => $store]);
+                    if ($request->imageCapture) {
+                    $imageData = $request->imageCapture;
+
+                    // Remove the prefix "data:image/png;base64,"
+                    $imageData = preg_replace('#^data:image/\w+;base64,#i', '', $imageData);
+                    $imageData = base64_decode($imageData);
+
+                    $filename = $request->qr_number . '_' . time() . '.png';
+
+                    Storage::disk('public')->put('qr_images/' . $filename, $imageData);
+                    $imagePath = 'qr_images/' . $filename;
+                } else {
+                    $imagePath = null;
+                }
+                    Log::info('Log Image:', ['filename' => $imagePath]);
 
                     Attendance::create([
                         'dswd_id' => $participants->dswd_id,
@@ -77,11 +86,12 @@ class QrCodeController extends Controller
                         'sex' => $participants->sex,
                         'qr_number' => $request->qr_number,
                         'status' => 'Present',
-                        'time_in' => now()->format('Y-m-d h:i A'),
-                        'image' => $store ?? null,
+                        'race_category' => $participants->race_category,
+                        'time_in' => now()->format('h:i A'),
+                        'image' => $imagePath,
                     ]);
 
-                 
+
                    // Assistance::where('fam_id', $bene->fam_id)->update(['cost' => '5000', 'status' => 'Paid']);
                   //  FunRunRegistration::where('bene_id', $participants->dswd_id)->update(['status' => 'Present']);
 
