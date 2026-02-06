@@ -22,19 +22,18 @@
             <li><strong>Division:</strong> {{ $registration->division }}</li>
             <li><strong>Section:</strong> {{ $registration->section }}</li>
             <li><strong>Race Category:</strong> {{ $registration->race_category_label }}</li>
-            <li><strong>Contact Number:</strong> {{ $registration->contact_number }}</li>
         </ul>
-        <!-- QR Code -->
-        <div style="flex-shrink: 0; transform: scale(4); transform-origin: top right;">
-            {!! $qrSvg !!}
-        </div>
     </div>
-    <p>Please take a picture of your qr code or print it to present it on the day of event.</p>
+            <!-- QR Code -->
+        <div>
+             {!! str_replace('<svg ', '<svg width="800"', $qrSvg) !!}
+        </div>
+    <p>Please keep your QR code secured and present it on the day of the event.</p>
     <p>Participants are required to: Prepare their own <b>Personnel Locator Slip (PLS)</b> or <b>Request<br> for Authority  to Travel (RFA)</b> documents. Accomplish and sign a <b>Health Consent Form</b>.<br> Proper running attire and hydration are advised. </i></p>
 
     <div style="margin-top: 100px; display: flex; gap: 20px; text-align: center; grid-column: span 3;">
         <a href="{{ route('fun-run.create') }}" class="btn-submit">Register Another Participant</a>
-         <a href="{{ route('fun-run.print-image', $registration->id) }}" target="_blank" class="btn-submit">Download QR Code</a>
+         <a href="{{ route('fun-run.print-image') }}" target="_blank" class="btn-submit">Download QR Code</a>
     </div>
 </section>
 

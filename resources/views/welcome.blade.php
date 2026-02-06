@@ -59,14 +59,8 @@
 
         /* Responsive Tweaks */
         @media (max-width: 1133px) { .scanner-box { max-width: 270px; max-height: 180px; } }
-        @media (max-width: 768px) { .scanner-box { max-width: 270px; max-height: 180px; }
-     #interactive video {
-            transform: scaleX(-1); /* horizontal flip */
-        }}
-        @media (max-width: 480px) { .scanner-box { max-width: 220px; max-height: 100px;  }
-        #interactive video {
-            transform: scaleX(-1); /* horizontal flip */
-        }}
+        @media (max-width: 768px) { .scanner-box { max-width: 270px; max-height: 180px; }}
+        @media (max-width: 480px) { .scanner-box { max-width: 220px; max-height: 100px;  }}
     </style>
 </head>
 <body class="bg-gray-700 text-gray-800 font-poppins bg-blend-multiply bg-cover bg-fixed" style="background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.4) 120%) #989898;">

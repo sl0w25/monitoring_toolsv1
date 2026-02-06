@@ -15,12 +15,46 @@
         }
 
         body {
-            font-family: 'Georgia', serif;
+            font-family: Arial, Helvetica, sans-serif;
             margin: 0;
             background-color: var(--light-gray);
             color: #333;
             line-height: 1.6;
         }
+
+        input {
+            font-family: "Roboto", Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 400;
+            color: #222;
+        }
+
+        .gradient-text {
+        background: linear-gradient(90deg, #bf953f, #fcf6ba, #b38728, #fbf5b7);
+        background-size: 300% 300%;
+
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+
+        background-clip: text;
+        color: transparent;
+
+        animation: gradientMove 5s ease infinite;
+    }
+
+    /* Animate Gradient */
+    @keyframes gradientMove {
+        0% {
+            background-position: 0% 50%;
+        }
+        50% {
+            background-position: 100% 50%;
+        }
+        100% {
+            background-position: 0% 50%;
+        }
+    }
+
 
         /* Top Government Bar */
         .gov-bar {
@@ -45,19 +79,85 @@
             border-bottom: 6px solid var(--gold-solid);
         }
 
-        .anniversary-logo {
-            width: 180px;
-            height: 180px;
-            background: white;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            border: 4px solid var(--gold-solid);
-            box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-        }
+            .anniversary-logo {
+                width: 180px;
+                height: 180px;
+                background: white;
+                border-radius: 50%;
+                margin: 0 auto 20px;
+
+                border: 4px solid var(--gold-solid);
+
+                /* Base Glow */
+                box-shadow:
+                    0 0 25px rgba(212, 175, 55, 0.5),
+                    0 0 45px rgba(212, 175, 55, 0.3);
+
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                overflow: hidden;
+                position: relative;
+
+                /* Soft Pulse */
+                animation: glowPulse 3s ease-in-out infinite;
+            }
+
+            /* Light Sweep Overlay */
+            .anniversary-logo::before {
+                content: "";
+                position: absolute;
+                top: -50%;
+                left: -50%;
+
+                width: 200%;
+                height: 200%;
+
+                background: linear-gradient(
+                    120deg,
+                    transparent 40%,
+                    rgba(255, 255, 255, 0.6) 50%,
+                    transparent 60%
+                );
+
+                transform: rotate(0deg);
+                animation: shineRotate 5s linear infinite;
+
+                pointer-events: none;
+            }
+
+            /* Glow Pulse Animation */
+            @keyframes glowPulse {
+                0%, 100% {
+                    box-shadow:
+                        0 0 25px rgba(212, 175, 55, 0.5),
+                        0 0 45px rgba(212, 175, 55, 0.3);
+                }
+
+                50% {
+                    box-shadow:
+                        0 0 40px rgba(212, 175, 55, 0.8),
+                        0 0 70px rgba(212, 175, 55, 0.6);
+                }
+            }
+
+            /* Rotating Shine */
+            @keyframes shineRotate {
+                from {
+                    transform: rotate(0deg);
+                }
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+
+            .anniversary-logo:hover {
+                animation-duration: 1.5s;
+                transform: scale(1.05);
+            }
+
+
 
         .anniversary-logo img { width: 90%; height: auto; }
 
@@ -70,7 +170,7 @@
         .theme-tagline {
             font-style: italic;
             font-size: 1.8rem;
-            color: var(--gold-solid);
+            /* color: var(--gold-solid); */
             max-width: 700px;
             margin: 0 auto;
         }
@@ -90,7 +190,30 @@
             border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             margin-bottom: 40px;
+            opacity: 0;
+            transform: translateX(60px);
+            animation: cardSlideIn 0.9s ease-out forwards;
         }
+
+
+            /* Optional stagger effect */
+            .card:nth-child(1) { animation-delay: 0.2s; }
+            .card:nth-child(2) { animation-delay: 0.4s; }
+            .card:nth-child(3) { animation-delay: 0.6s; }
+            .card:nth-child(4) { animation-delay: 0.8s; }
+
+            /* Keyframes */
+            @keyframes cardSlideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(60px);
+                }
+
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
 
         .section-title {
             color: var(--dswd-blue);
@@ -100,6 +223,7 @@
             margin-bottom: 30px;
             width: 100%;
             padding-bottom: 10px;
+            padding-top: 1px;
         }
 
         .section-address {
@@ -189,6 +313,24 @@
             font-size: 0.8rem;
         }
 
+        select, ::picker(select) {
+            appearance: base-select;
+            width: 450px;
+            overflow: hidden;
+        }
+
+        ::picker(select) {
+            border: 0;
+            margin: .1rem 0;
+            box-shadow: 0 0 5px rgba(0,0,0, .15);
+        }
+
+        option {
+            font-family: 'Times New Roman', serif;
+            font-size: 15px;
+            padding: 5px;
+        }
+
         .sex-group {
                 display: flex;
                 flex-direction: row; /* horizontal line */
@@ -202,14 +344,170 @@
                 align-items: center;
                 gap: 6px; /* space between radio and text */
             }
+            .qr-box {
+                flex-shrink: 0;
+                transform: scale(4);
+                transform-origin: top right;
+                        }
+
+
+            /* LOADING SPINNER */
+            .loader {
+                width: 50px;
+                height: 50px;
+                border: 6px solid #ddd;
+                border-top: 6px solid #003366;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+
+            .qr-container svg {
+                width: 200px;   /* set desired width */
+                height: 200px;  /* set desired height */
+            }
+
+            @keyframes spin {
+                from { transform: rotate(0deg); }
+                to { transform: rotate(360deg); }
+            }
+
+
+
+                    /* Header Container */
+            .animated-header {
+                text-align: center;
+                padding: 90px 5px;
+            }
+
+            /* Base Animation Setup */
+            .fade-in,
+            .slide-down,
+            .fade-up {
+                opacity: 0;
+                animation-fill-mode: forwards;
+            }
+
+            /* Logo Fade In */
+            .fade-in {
+                animation: fadeIn 1s ease-in-out forwards;
+            }
+
+            /* Title Slide Down */
+            .slide-down {
+                animation: slideDown 1s ease-out forwards;
+                animation-delay: 0.3s;
+            }
+
+            /* Tagline Fade Up */
+            .fade-up {
+                animation: fadeUp 1s ease-out forwards;
+                animation-delay: 0.6s;
+            }
+
+            /* Keyframes */
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideDown {
+                from {
+                    opacity: 0;
+                    transform: translateY(-30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            @keyframes fadeUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+
+            /* Gradient Base */
+.gradient-text {
+    background: linear-gradient(
+        90deg,
+        #b38728,
+        #fcf6ba,
+        #fff6cc,
+        #b38728
+    );
+
+    background-size: 300% 300%;
+
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+
+    background-clip: text;
+    color: transparent;
+}
+
+/* Shining Animation */
+.shine-text {
+    position: relative;
+
+    animation: textShine 4s linear infinite,
+               textGlow 2.5s ease-in-out infinite;
+}
+
+/* Moving Light */
+@keyframes textShine {
+    0% {
+        background-position: 0% 50%;
+    }
+
+    100% {
+        background-position: 300% 50%;
+    }
+}
+
+/* Soft Glow Pulse */
+@keyframes textGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 3px rgba(212,175,55,0.4))
+                drop-shadow(0 0 6px rgba(212,175,55,0.2));
+    }
+
+    50% {
+        filter: drop-shadow(0 0 6px rgba(212,175,55,0.8))
+                drop-shadow(0 0 12px rgba(212,175,55,0.5));
+    }
+}
+
+
+
 
 
         /* ===================== */
         /* RESPONSIVE */
-        @media (max-width: 1024px) {
+        @media (max-width: 1138px) {
             .main-container { padding: 0 15px; }
             h1 { font-size: 2.5rem; }
             .theme-tagline { font-size: 1.5rem; }
+        }
+
+
+        /* TABLET & MOBILE */
+        @media (max-width: 1046px) {
+                .qr-box {
+                   margin-top: 200px; display: flex; gap: 20px; text-align: center; grid-column: span 1; flex-shrink: 0;
+                transform: scale(4);
+                transform-origin: top right;
+                }
         }
 
         @media (max-width: 768px) {
@@ -248,11 +546,11 @@
                     align-items: center;
                     gap: 0px; /* space between radio and text */
                 }
-                 #interactive video {
-                    transform: scaleX(-1); /* horizontal flip */
-                }
 
-        }
+    }
+
+
+
 
     </style>
 
@@ -262,13 +560,20 @@
 
     <div class="gov-bar">Department of Social Welfare and Development Field Office III</div>
 
-    <header>
-        <div class="anniversary-logo">
+    <header class="animated-header">
+        <div class="anniversary-logo fade-in">
             @yield('header-logo')
         </div>
-        <h1>@yield('header-title', 'DSWD 75TH ANNIVERSARY')</h1>
-        <p class="theme-tagline">@yield('header-tagline', '75 Years of Maagap at Mapagkalingang Serbisyo')</p>
+
+        <h1 class="slide-down">
+            @yield('header-title', 'DSWD 75TH ANNIVERSARY')
+        </h1>
+
+        <p class="theme-tagline fade-up gradient-text">
+            @yield('header-tagline', '75 Years of Maagap at Mapagkalingang Serbisyo')
+        </p>
     </header>
+
 
     <div class="main-container">
         @yield('content')
@@ -277,9 +582,31 @@
     <footer>
         <p><strong>DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT FIELD OFFICE III</strong><br>
         Government Center, Maimpis, City of San Fernando, Pampanga, 2000, Philippines<br>
-        © 1951 - 2026 POWERED BY DRIMS</p>
+        © 2026 POWERED BY DRIMS</p>
     </footer>
 
     @yield('scripts')
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen" style="
+        display:none;
+        position:fixed;
+        top:0; left:0;
+        width:100%;
+        height:100%;
+        background:rgba(255,255,255,0.9);
+        z-index:10000;
+        justify-content:center;
+        align-items:center;
+        flex-direction:column;
+        font-family: Arial, sans-serif;
+    ">
+
+        <div class="loader"></div>
+        <p style="margin-top:15px;font-weight:bold;color:#003366;">
+            Processing your registration...
+        </p>
+
+    </div>
+
 </body>
 </html>

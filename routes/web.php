@@ -26,11 +26,13 @@ Route::get('/', [FunRunRegistrationController::class, 'create'])->name('fun-run.
 
 Route::post('/fun-run/register', [FunRunRegistrationController::class, 'store'])->name('fun-run.store');
 
-Route::get('/fun-run/success', [FunRunRegistrationController::class, 'show'])->name('fun-run.show');
+Route::get('/fun-run/download-waiver', [FunRunRegistrationController::class, 'waiver'])->name('fun-run.download-waiver');
+
+Route::get('/fun-run/success', [FunRunRegistrationController::class, 'show'])->name('fun-run.success');
 
 Route::get('/fun-run/{registration}/pdf', [FunRunRegistrationController::class, 'downloadPdf'])->name('fun-run.pdf');
 
-Route::get('/fun-run/print-image/{id}', [FunRunRegistrationController::class, 'printImage'])->name('fun-run.print-image');
+Route::get('/fun-run/print-image/', [FunRunRegistrationController::class, 'printImage'])->name('fun-run.print-image');
 
 Route::get('/fun-run/qr', [FunRunRegistrationController::class, 'showQrForm'])->name('fun-run.qr');
 

@@ -24,7 +24,11 @@
 
     <section class="card">
         <h2 class="section-title">Registration</h2>
-            <form action="{{ route('fun-run.store') }}" method="POST" enctype="multipart/form-data">
+            <form action="{{ route('fun-run.store') }}"
+                method="POST"
+                enctype="multipart/form-data"
+                id="registrationForm">
+
             @csrf
             @if($errors->any())
             <div style="background:#f8d7da;padding:12px;border-radius:6px;margin-bottom:15px;color:#721c24;">
@@ -38,26 +42,25 @@
                 <div class="form-grid">
                     <div class="full-width2">
                         <label>DSWD ID #</label>
-                        <input tpye="text" name="dswd_id" value="{{ old('dswd_id') }}" placeholder="00-0000" required>
+                        <input tpye="text" name="dswd_id" class="dswd-id" value="{{ old('dswd_id') }}" placeholder="03-00000" required>
                     </div>
 
                     <div>
                         <label>First Name</label>
-                        <input type="text" name="first_name" value="{{ old('first_name') }}" placeholder="Juan" required>
-
+                        <input type="text" name="first_name" class="only-letters" value="{{ old('first_name') }}" placeholder="Juan" required>
 
                     </div>
                     <div>
                         <label>Middle Name</label>
-                        <input type="text" name="middle_name" value="{{ old('middle_name') }}" placeholder="Andress" required>
+                        <input type="text" name="middle_name" class="only-letters" value="{{ old('middle_name') }}" placeholder="Andress" required>
                     </div>
                     <div>
                         <label>Last Name</label>
-                        <input type="text" name="last_name" value="{{ old('last_name') }}" placeholder="Dela Cruz" required>
+                        <input type="text" name="last_name" class="only-letters" value="{{ old('last_name') }}" placeholder="Dela Cruz" required>
                     </div>
                     <div>
                         <label>Ext. Name</label>
-                        <input type="text" name="ext_name" value="{{ old('ext_name') }}" placeholder="JR." >
+                        <input type="text" name="ext_name" class="only-letters" value="{{ old('ext_name') }}" placeholder="JR." >
                     </div>
                     <div class="full-width">
                         <label>Division/Office</label>
@@ -88,7 +91,7 @@
 
                     <div class="full-width">
                         <label>Contact Number</label>
-                        <input type="text" name="contact_number" value="{{ old('contact_number') }}" placeholder="Your Contact Number" required>
+                        <input type="text" name="contact_number" class="numbers-only" value="{{ old('contact_number') }}" placeholder="Your Contact Number" required>
                     </div>
 
                     <div class="full-width">
@@ -110,12 +113,12 @@
 
                     <div class="full-width">
                         <label>In Case of Emergency <small style="color: rgb(219, 86, 86)">(contact person)</small></label>
-                        <input type="text" name="emergency_contact_name" value="{{ old('emergency_contact_name') }}"  placeholder="Full Name" required>
+                        <input type="text" class="only-letters" name="emergency_contact_name" value="{{ old('emergency_contact_name') }}"  placeholder="Full Name" required>
                     </div>
 
                     <div class="full-width">
                         <label>In Case of Emergency <small style="color: rgb(219, 86, 86)">(contact number)</small></label>
-                        <input type="text" name="emergency_contact_number" value="{{ old('emergency_contact_number') }}" placeholder="Contact Number" required>
+                        <input type="text" name="emergency_contact_number" class="numbers-only" value="{{ old('emergency_contact_number') }}" placeholder="Contact Number" required>
                     </div>
 
                     <div class="full-width2">
@@ -202,8 +205,14 @@
                     </div>
 
                     <div class="full-width2">
-                        <label>Health Consent Form</label>
-                        <input type="file" name="health_consent_form" value="{{ old('health_consent_form') }}" placeholder="Dela Cruz, Juan A.">
+                        <label>Health Consent Form <a href="{{ route('fun-run.download-waiver') }}" target="_blank" class="privacy-link text-blue-800 underline cursor-pointer hover:opacity-80">(click here to download the form)</a></label>
+                        {{-- <input type="file" name="health_consent_form" value="{{ old('health_consent_form') }}" placeholder="Health Consent" required> --}}
+                        <p style="font-weight: bold;
+                                font-size: 0.9rem;
+                                color: #555;
+                                display: block;
+                                margin-bottom: 5px;">Note: Please provide this form with your signature upon attendance.</p>
+
                     </div>
 
                     <div class="full-width2">
@@ -386,7 +395,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>04:00 AM</td><td><strong>Attendance</strong> - DSWD Field Office III</td></tr>
+                <tr><td>04:00 AM</td><td><strong>Attendance - General Assembly</strong> - DSWD Field Office III</td></tr>
                 <tr><td>04:00 AM</td><td><strong>Opening Prayer - Welcome Message</strong> - DSWD Field Office III</td></tr>
                 <tr><td>04:45 AM</td><td><strong>Zumba - Route Map</strong> - DSWD Field Office III</td></tr>
                 <tr><td>05:00 AM</td><td><strong>Fun Run Starts</strong> - DSWD Field Office III</td></tr>
@@ -410,9 +419,85 @@ document.addEventListener('DOMContentLoaded', function () {
     const mapModal = document.getElementById('mapModal');
     const openMap = document.getElementById('openMapModal');
     const closeMap = document.getElementById('closeMapModal');
-
+    const form = document.getElementById('registrationForm');
+    const loadingScreen = document.getElementById('loadingScreen');
+    const textInputs = document.querySelectorAll('input.only-letters');
+    const numberInputs = document.querySelectorAll('input.numbers-only');
+    const dswdInputs = document.querySelectorAll('input.dswd-id');
     const oldDivision = "{{ old('division') }}";
     const oldSection  = "{{ old('section') }}";
+
+    textInputs.forEach(input => {
+        // Block invalid characters while typing
+        input.addEventListener('keypress', function(e) {
+            const regex = /^[a-zA-Z\s]$/;
+            if (!regex.test(e.key)) {
+                e.preventDefault(); // prevent typing anything else
+            }
+        });
+
+        // Clean pasted input
+        input.addEventListener('input', function() {
+            this.value = this.value.replace(/[^a-zA-Z\s]/g, ''); // remove anything not letters or spaces
+        });
+    });
+
+        numberInputs.forEach(input => {
+            // Block invalid characters while typing
+            input.addEventListener('keypress', function(e) {
+                const regex = /^[0-9 +]$/;
+                if (!regex.test(e.key) || this.value.length >= 13) {
+                    e.preventDefault(); // prevent typing anything else or exceeding 13 chars
+                }
+            });
+
+            // Clean pasted input & enforce 13-char limit
+            input.addEventListener('input', function() {
+                this.value = this.value
+                    .replace(/[^0-9 +]/g, '') // remove anything not numbers, space, or +
+                    .slice(0, 13); // limit to 13 characters
+            });
+        });
+
+
+        dswdInputs.forEach(input => {
+            input.addEventListener('keypress', function(e) {
+                const key = e.key;
+                const value = this.value;
+
+                // Block if already 8 chars
+                if (value.length >= 8) {
+                    e.preventDefault();
+                    return;
+                }
+
+                // Allow only numbers or -
+                const regex = /^[0-9-]$/;
+                if (!regex.test(key)) {
+                    e.preventDefault();
+                    return;
+                }
+
+                // Force first two characters to be "03-"
+                if (value.length === 0 && key !== '0') e.preventDefault();
+                if (value.length === 1 && key !== '3') e.preventDefault();
+                if (value.length === 2 && key !== '-') e.preventDefault();
+            });
+
+            input.addEventListener('input', function() {
+                // Remove invalid chars
+                let val = this.value.replace(/[^0-9-]/g, '');
+
+                // Enforce 03- at start
+                if (!val.startsWith('03-')) {
+                    val = '03-';
+                }
+
+                // Limit to 8 chars
+                this.value = val.slice(0, 8);
+            });
+        });
+
 
     /* ===============================
        SECTION OPTIONS
@@ -512,6 +597,8 @@ document.addEventListener('DOMContentLoaded', function () {
     };
 
 
+
+
     /* ===============================
        HELPERS
     =============================== */
@@ -600,6 +687,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 mapModal.style.display = 'none';
             }
         });
+    }
+
+        if (form && loadingScreen) {
+
+        form.addEventListener('submit', function () {
+
+            // Show loading screen
+            loadingScreen.style.display = 'flex';
+
+            // Disable submit button (prevent double submit)
+            const btn = form.querySelector('button[type="submit"]');
+            if (btn) {
+                btn.disabled = true;
+                btn.style.opacity = '0.7';
+            }
+
+        });
+
     }
 
 

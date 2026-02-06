@@ -38,11 +38,11 @@
 
 
             <div style="margin: 15px 0;">
-                {!! QrCode::size(200)->generate($registration->qr_number) !!}
+                <a href="{{ route('fun-run.print-image', $registration->id) }}" target="_blank" style="text-decoration: none;">{!! QrCode::size(200)->generate($registration->qr_number) !!}</a>
             </div>
 
 
-            <a href="{{ route('fun-run.print-image', $registration->id) }}" target="_blank" style="text-decoration: none;" class="btn-submit">Download QR Code</a>
+            {{-- <a href="{{ route('fun-run.print-image', $registration->id) }}" target="_blank" style="text-decoration: none;" class="btn-submit">Download QR Code</a> --}}
 
         </div>
     @endif
