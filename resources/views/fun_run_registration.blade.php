@@ -6,18 +6,41 @@
     <img src="{{ asset('storage/images/anniv_logo.png') }}" alt="DSWD 75th Logo">
 @endsection
 
+    <!-- LOADING SCREEN -->
+    <div id="loadingScreen" style="
+        display:none;
+        position:fixed;
+        top:0; left:0;
+        width:100%;
+        height:100%;
+        background:rgba(255,255,255,0.9);
+        z-index:10000;
+        justify-content:center;
+        align-items:center;
+        flex-direction:column;
+        font-family: Arial, sans-serif;
+    ">
+
+        <div class="loader"></div>
+        <p style="margin-top:15px;font-weight:bold;color:#003366;">
+            Processing your registration...
+        </p>
+
+    </div>
+
 @section('content')
 
 
     <section class="card">
         <h2 class="section-title">TAKBO PARA SA BAGONG HENERASYON</h2>
-        <p stly="margin-top: 20px;"><i><medium>In celebration of the <b>Department of Social Welfare and Development’s (DSWD) 75th Founding Anniversary,</b> the <b>Disaster Response Management Division (DRMD)</b> will spearhead a <b>Fun Run Activity on 25 February 2026 (Wednesday), 4:00 AM</b> at the <b>Diosdado Macapagal Government Center, Maimpis, City of San Fernando, Pampanga.</b><br><br>
+        <p stly="margin-top: 20px; text-align: justify;"><i><medium>In celebration of the <b>Department of Social Welfare and Development’s (DSWD) 75th Founding Anniversary,</b> the <b>Disaster Response Management Division (DRMD)</b> will spearhead a <b>Fun Run Activity on 25 February 2026 (Wednesday), 4:00 AM</b> at the <b>Diosdado Macapagal Government Center, Maimpis, City of San Fernando, Pampanga.</b><br><br>
 
-                This activity aims to promote health, wellness, camaraderie, and solidarity among the staff of <b>DSWD Field Office III – Central Luzon</b> while commemorating this milestone anniversary.<br><br>
+                This activity aims to promote health, wellness, camaraderie, and solidarity among the staff of <b>DSWD Field Office 3 – Central Luzon</b> while commemorating this milestone anniversary.<br><br>
 
                 Participation Guidelines<br><br>
 
-                All interested staff are encouraged to join and actively participate. Participants are required to: Prepare their own <b>Personnel Locator Slip (PLS)</b> or <b>Request for Authority  to Travel (RFA)</b> documents. Accomplish and sign a <b>Health Consent Form</b> . Proper running attire and hydration are advised. </i></p>
+                All interested staff are encouraged to join and actively participate. Participants are required to: Prepare their own <b>Personnel Locator Slip (PLS)</b> or <b>Request for Authority  to Travel (RFA)</b> and <b>Regional Special Order (RSO)</b> documents. Accomplish and sign a <b>Health Consent Form</b> . Proper running attire and hydration are advised. </i></p>
+                <p>For Additional Information you may <a href="{{ route('fun-run.download-mechanic') }}" target="_blank" class="privacy-link text-blue-800 underline cursor-pointer hover:opacity-80">download the Mechanics here</a>.</p>
             </medium>
     </section>
 
@@ -59,7 +82,7 @@
                         <input type="text" name="last_name" class="only-letters" value="{{ old('last_name') }}" placeholder="Dela Cruz" required>
                     </div>
                     <div>
-                        <label>Ext. Name</label>
+                        <label>Ext. Name (if applicable)</label>
                         <input type="text" name="ext_name" class="only-letters" value="{{ old('ext_name') }}" placeholder="JR." >
                     </div>
                     <div class="full-width">
@@ -125,7 +148,7 @@
                        <label style="display: block; margin-bottom: 8px;">
                             Race Category
                             <span id="openMapModal" class="privacy-link text-blue-800 underline cursor-pointer hover:opacity-80" tabindex="0" role="button">
-                                (click here to view the map)
+                                (click here to view the MAP)
                             </span>
                         </label>
 
@@ -209,14 +232,14 @@
                         {{-- <input type="file" name="health_consent_form" value="{{ old('health_consent_form') }}" placeholder="Health Consent" required> --}}
                         <p style="font-weight: bold;
                                 font-size: 0.9rem;
-                                color: #555;
+                                color: #dd0707;
                                 display: block;
                                 margin-bottom: 5px;">Note: Please provide this form with your signature upon attendance.</p>
 
                     </div>
 
                     <div class="full-width2">
-                        <div style="margin-top: 20px; margin-bottom: 20px;">
+                        <div style="margin-top: -10px; margin-bottom: 20px;">
 
                             <div style="display: flex; align-items: center; gap: 10px;">
 
@@ -229,17 +252,31 @@
                                 <label for="dataPrivacyCheck"
                                     style="font-size: 0.95rem; color: #555; cursor: pointer;">
                                     I have read and agree to the
-                                </label>
-
                                 <span id="openPrivacyModal" class="privacy-link text-blue-800 underline cursor-pointer hover:opacity-80" tabindex="0" role="button">
                                     Data Privacy Notice
                                 </span>
+                                </label>
 
 
                             </div>
 
                         </div>
                     </div>
+
+                    <div class="full-width2">
+                        <div class="g-recaptcha" data-sitekey="{{ env('RECAPTCHA_SITE_KEY') }}"></div>
+                    </div>
+
+
+
+                    <div class="full-width2">
+                        <div style="display: flex; gap: 30px; text-align: center; margin-top: -20px;">
+                            <button type="submit" class="btn-submit">Register</button>
+                            <a href="/fun-run/qr" class="btn-submit" style="text-decoration: none;">Generate QR Code</a>
+                        </div>
+                    </div>
+            </form>
+    </section>
 
                     <!-- MAP MODAL -->
                     <div id="mapModal" style="
@@ -254,7 +291,7 @@
                         <div style="
                                 background: #fff;
                                 max-width: 800px;
-                                width: 90%;
+                                width: 100%;
                                 padding: 20px;
                                 border-radius: 8px;
                                 position: relative;
@@ -272,7 +309,7 @@
                                 border-radius: 4px;
                                 font-size: 14px;
                             ">
-                            <strong>Legend:</strong>
+                            <strong style="margin-top: 0; color: #003366;">Legend:</strong>
 
                             <ul style="
                                 list-style:none;
@@ -285,12 +322,44 @@
                             ">
 
                                 <li style="display:flex;align-items:center;gap:6px;">
-                                    <span style="width:12px;height:10px;background:#b30202;border-radius:50%;display:inline-block;"></span>
+                                    <span style="
+                                        width:12px;
+                                        height:12px;
+                                        background:#b30202;
+                                        border-radius:50%;
+                                        display:inline-flex;
+                                        align-items:center;
+                                        justify-content:center;
+                                    ">
+                                        <span style="
+                                            width:6px;
+                                            height:6px;
+                                            background:white;
+                                            border-radius:50%;
+                                            display:block;
+                                        "></span>
+                                    </span>
                                     Ribbon Station
                                 </li>
 
                                 <li style="display:flex;align-items:center;gap:6px;">
-                                    <span style="width:12px;height:12px;background:#bbff00;border-radius:50%;display:inline-block;"></span>
+                                    <span style="
+                                        width:12px;
+                                        height:12px;
+                                        background:#bbff00;
+                                        border-radius:50%;
+                                        display:inline-flex;
+                                        align-items:center;
+                                        justify-content:center;
+                                    ">
+                                        <span style="
+                                            width:6px;
+                                            height:6px;
+                                            background:white;
+                                            border-radius:50%;
+                                            display:block;
+                                        "></span>
+                                    </span>
                                     Water Station
                                 </li>
 
@@ -300,7 +369,7 @@
                                 </li>
 
                                 <li style="display:flex;align-items:center;gap:6px;">
-                                    <span style="font-size:14px;">📍</span>
+                                   <span style="width:12px;height:12px;background:#4F7942;border-radius:50%;display:inline-block;"></span>
                                     Start / Finish Area
                                 </li>
 
@@ -308,14 +377,13 @@
 
 
                             </div>
+                           <div class="map-crop">
                             <iframe
                                 src="https://www.google.com/maps/d/u/0/embed?mid=128al8iHvnKKm_qMdMTijzG__NXLz8n0&ehbc=2E312F&noprof=1"
-                                width="100%"
-                                height="500"
-                                style="border:0;"
-                                allowfullscreen=""
                                 loading="lazy">
                             </iframe>
+                        </div>
+
                             <button id="closeMapModal" type="button" style="
                                     position: absolute;
                                     top: 10px;
@@ -375,14 +443,6 @@
                             </button>
                         </div>
                     </div>
-                    <div class="full-width2">
-                        <div style="display: flex; gap: 30px; text-align: center; margin-top: -40px;">
-                            <button type="submit" class="btn-submit">Register</button>
-                            <a href="/fun-run/qr" class="btn-submit" style="text-decoration: none;">Generate QR Code</a>
-                        </div>
-                    </div>
-            </form>
-    </section>
 
 
     <section class="card">
@@ -395,16 +455,18 @@
                 </tr>
             </thead>
             <tbody>
-                <tr><td>04:00 AM</td><td><strong>Attendance - General Assembly</strong> - DSWD Field Office III</td></tr>
-                <tr><td>04:00 AM</td><td><strong>Opening Prayer - Welcome Message</strong> - DSWD Field Office III</td></tr>
-                <tr><td>04:45 AM</td><td><strong>Zumba - Route Map</strong> - DSWD Field Office III</td></tr>
-                <tr><td>05:00 AM</td><td><strong>Fun Run Starts</strong> - DSWD Field Office III</td></tr>
-                <tr><td>07:30 AM</td><td><strong>Fun Run Ends - Cool Down Execise</strong> - DSWD Field Office III</td></tr>
-                <tr><td>07:30 AM</td><td><strong>Awarding Ceremony</strong> - DSWD Field Office III</td></tr>
+                <tr><td>04:00 AM</td><td><strong>Attendance - General Assembly</strong> - DSWD Field Office 3</td></tr>
+                <tr><td>04:00 AM</td><td><strong>Opening Prayer - Welcome Message</strong> - DSWD Field Office 3</td></tr>
+                <tr><td>04:45 AM</td><td><strong>Zumba - Route Map</strong> - DSWD Field Office 3</td></tr>
+                <tr><td>05:00 AM</td><td><strong>Fun Run Starts</strong> - DSWD Field Office 3</td></tr>
+                <tr><td>07:30 AM</td><td><strong>Fun Run Ends - Cool Down Execise</strong> - DSWD Field Office 3</td></tr>
+                <tr><td>07:30 AM</td><td><strong>Awarding Ceremony</strong> - DSWD Field Office 3</td></tr>
             </tbody>
         </table>
     </section>
 @endsection
+
+<script src="https://www.google.com/recaptcha/api.js" async defer></script>
 
 
 <script>
@@ -426,6 +488,11 @@ document.addEventListener('DOMContentLoaded', function () {
     const dswdInputs = document.querySelectorAll('input.dswd-id');
     const oldDivision = "{{ old('division') }}";
     const oldSection  = "{{ old('section') }}";
+
+    if (loadingScreen) {
+        // Hide by default on page load
+        loadingScreen.style.display = 'none';
+    }
 
     textInputs.forEach(input => {
         // Block invalid characters while typing
@@ -708,20 +775,41 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
 
-    /* ===============================
-       AUTO-FOCUS FIRST ERROR
-    =============================== */
 
-    @if($errors->any())
-        const firstError = document.querySelector('.form-grid [name]');
-        if (firstError) {
-            firstError.focus();
-        }
-    @endif
+});
 
+window.addEventListener('pageshow', function(event) {
+    const loadingScreen = document.getElementById('loadingScreen');
+    if (loadingScreen) {
+        loadingScreen.style.display = 'none';
+    }
 });
 
 
 </script>
+@if($errors->any())
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const firstErrorFieldName = @json(array_key_first($errors->toArray()));
+
+    if (firstErrorFieldName) {
+        let firstErrorField;
+
+        if (firstErrorFieldName === 'g-recaptcha-response') {
+            // Scroll to reCAPTCHA container
+            firstErrorField = document.querySelector('.g-recaptcha');
+        } else {
+            firstErrorField = document.querySelector(`[name="${firstErrorFieldName}"]`);
+        }
+
+        if (firstErrorField) {
+            firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            if (firstErrorField.focus) firstErrorField.focus();
+        }
+    }
+});
+</script>
+@endif
+
 
 

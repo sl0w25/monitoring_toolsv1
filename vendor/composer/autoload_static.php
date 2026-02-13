@@ -269,9 +269,9 @@ class ComposerStaticInit626b9e7ddd47fb7eff9aaa53cce0c9ad
         ),
         'phpDocumentor\\Reflection\\' => 
         array (
-            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
-            1 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
-            2 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            0 => __DIR__ . '/..' . '/phpdocumentor/reflection-docblock/src',
+            1 => __DIR__ . '/..' . '/phpdocumentor/type-resolver/src',
+            2 => __DIR__ . '/..' . '/phpdocumentor/reflection-common/src',
         ),
         'ZipStream\\' => 
         array (
@@ -865,8 +865,10 @@ class ComposerStaticInit626b9e7ddd47fb7eff9aaa53cce0c9ad
         'App\\Http\\Controllers\\PdfController' => __DIR__ . '/../..' . '/app/Http/Controllers/PdfController.php',
         'App\\Http\\Controllers\\QrCodeController' => __DIR__ . '/../..' . '/app/Http/Controllers/QrCodeController.php',
         'App\\Http\\Middleware\\VerifyIsAdmin' => __DIR__ . '/../..' . '/app/Http/Middleware/VerifyIsAdmin.php',
+        'App\\Http\\Requests\\FunRunQrSearchRequest' => __DIR__ . '/../..' . '/app/Http/Requests/FunRunQrSearchRequest.php',
         'App\\Http\\Requests\\FunRunRegistrationRequest' => __DIR__ . '/../..' . '/app/Http/Requests/FunRunRegistrationRequest.php',
         'App\\Mail\\BeneficiaryAssigned' => __DIR__ . '/../..' . '/app/Mail/BeneficiaryAssigned.php',
+        'App\\Models\\AllowedDevice' => __DIR__ . '/../..' . '/app/Models/AllowedDevice.php',
         'App\\Models\\Attendance' => __DIR__ . '/../..' . '/app/Models/Attendance.php',
         'App\\Models\\Aurora' => __DIR__ . '/../..' . '/app/Models/Aurora.php',
         'App\\Models\\Bataan' => __DIR__ . '/../..' . '/app/Models/Bataan.php',

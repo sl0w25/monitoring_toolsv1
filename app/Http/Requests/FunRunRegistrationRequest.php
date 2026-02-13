@@ -35,7 +35,15 @@ class FunRunRegistrationRequest extends FormRequest
             'emergency_contact_number' => 'required|string|max:20',
             'race_category' => 'required|string',
             'health_consent_form' => 'nullable|file|mimes:pdf,jpg,jpeg,png|max:2048',
-            'qr_number' => 'nullable'
+            'qr_number' => 'nullable',
+            'g-recaptcha-response' => 'required'
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'g-recaptcha-response.required' => 'Please verify that you are not a robot before submitting the form.',
         ];
     }
 }

@@ -4,285 +4,268 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Attendance Log Monitoring</title>
+    <title>DSWD Attendance Monitoring System</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
-        /* Parent container must be relative for absolute positioning */
-        .video-container {
+        body { font-family: 'Montserrat', sans-serif; background-color: #f4f7fa; }
+        .bg-dswd-blue { background-color: #0038a8; }
+        .text-dswd-blue { color: #0038a8; }
+        .bg-dswd-red { background-color: #ce1126; }
+        .diamond-clip { clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+
+        /* FIXED SCANNER SIZE LOGIC */
+        .scanner-container {
             position: relative;
-            width: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            border: 4px solid #0038a8;
+            border-radius: 1.5rem;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 56, 168, 0.2);
+            aspect-ratio: 1 / 1; /* Keeps it perfectly square */
+            background: #000;
         }
+
+        #interactive {
+            width: 100% !important;
+            height: 100% !important;
+        }
+
         #interactive video {
-            transform: scaleX(-1); /* horizontal flip */
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important; /* Forces video to fill the square */
+            transform: scaleX(-1); /* Mirrors the video */
         }
 
-        /* Scanner Box Overlay */
-        /* .scanner-box {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 100%;
-            max-width: 350px;
-            height: 100%;
-            max-height: 270px;
-            border: 3px solid rgb(145, 255, 0);
-            background: rgba(255, 255, 255, 0.1);
-            box-shadow: 0 0 15px rgba(255, 0, 0, 0.7);
-            animation: pulse 2s infinite alternate ease-in-out;
-            pointer-events: none; }/* clicks pass through */
-
-
-        /* Scanner Line Animation */
-        /* .scanner-line {
+        /* Scanning HUD */
+        .hud-line {
             position: absolute;
             width: 100%;
             height: 3px;
-            background: rgb(30, 255, 0);
-            top: 0;
-            left: 0;
-            animation: scan 2s infinite linear;
-        } */ */
-
-        @keyframes pulse {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            100% { transform: translate(-50%, -50%) scale(1.1); }
+            background: #ce1126;
+            box-shadow: 0 0 15px #ce1126;
+            animation: scan-move 3s infinite ease-in-out;
+            z-index: 20;
+            pointer-events: none;
         }
+        @keyframes scan-move { 0%, 100% { top: 10%; } 50% { top: 90%; } }
 
-        @keyframes scan {
-            0% { top: 0; }
-            100% { top: 100%; }
-        }
-
-        /* Responsive Tweaks */
-        @media (max-width: 1133px) { .scanner-box { max-width: 270px; max-height: 180px; } }
-        @media (max-width: 768px) { .scanner-box { max-width: 270px; max-height: 180px; }}
-        @media (max-width: 480px) { .scanner-box { max-width: 220px; max-height: 100px;  }}
+        .table-container { border-top: 6px solid #0038a8; }
+        .attendance-logo {
+                display: inline-block;
+                height: 20px; /* Adjust height as needed */
+                width: auto;
+                vertical-align: middle;
+                margin-right: 6px;
+               // filter: grayscale(100%); /* Optional: makes it look more formal/subtle */
+                opacity: 0.8;
+            }
     </style>
 </head>
-<body class="bg-gray-700 text-gray-800 font-poppins bg-blend-multiply bg-cover bg-fixed" style="background: linear-gradient(to bottom, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.15) 100%), radial-gradient(at top center, rgba(255,255,255,0.4) 0%, rgba(0,0,0,0.4) 120%) #989898;">
+<body class="min-h-screen flex flex-col">
 
-<div class="flex justify-center items-center h-[91.5vh]">
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 w-11/12 h-[90%] bg-white bg-opacity-80 p-10 rounded-2xl shadow-lg">
+    <nav class="bg-white border-b-2 border-slate-200 px-8 py-3">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <img src="{{ asset('storage/images/dswd.png') }}" alt="DSWD Logo" class="h-14">
+                <div class="h-10 w-px bg-slate-300"></div>
+                <div>
+                    <h1 class="text-lg font-black text-dswd-blue leading-none tracking-tighter">Fun Run | 75th Founding Anniversary</h1>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest"></p>
+                </div>
+            </div>
+            <div class="text-right flex items-center gap-4">
+                <div class="hidden md:block text-right">
+                    <p id="date-display" class="text-xs font-bold text-slate-700"></p>
+                    <p id="time-display" class="text-sm font-black text-dswd-blue leading-none mt-1"></p>
+                </div>
 
-        <!-- QR Scanner Section -->
-        <div class="col-span-1 flex flex-col items-center shadow-md rounded-lg p-6 bg-white">
-            <h5 class="text-center text-lg font-semibold mb-4">Scan your QR Code here</h5>
-            <div class="video-container">
-                <!-- Html5-Qrcode will inject the video here -->
-                <div id="interactive" class="w-full rounded-md"></div>
-                <canvas id="qrCaptureCanvas" class="hidden"></canvas>
+                    <img src="{{ asset('storage/images/anniv_logo.png') }}" alt="DSWD Logo" class="h-14">
 
-                <!-- Overlay -->
-                <div id="scannerBox" class="scanner-box">
-                    <div class="scanner-line"></div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow container mx-auto p-6 grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="lg:col-span-4 space-y-6">
+            <div class="bg-white p-6 rounded-[2rem] shadow-xl border border-slate-100">
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="text-sm font-black text-slate-800 uppercase tracking-tight">Scanner Portal</h2>
+                    <span class="flex items-center gap-1 text-[10px] font-bold text-green-600 bg-green-50 px-2 py-1 rounded-full">
+                        <span class="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></span> ONLINE
+                    </span>
+                </div>
+
+                <div class="scanner-container">
+                    <div id="interactive"></div>
+                    <div class="hud-line"></div>
+                </div>
+
+                <div class="mt-6 space-y-3 text-center">
+                    <div id="success-container" class="hidden p-4 bg-blue-50 text-dswd-blue border border-blue-200 rounded-2xl font-bold animate-pulse text-sm"></div>
+                    <div id="error-container" class="hidden p-4 bg-red-50 text-dswd-red border border-red-200 rounded-2xl font-bold text-sm"></div>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.2em]">QR Detection Active</p>
                 </div>
             </div>
 
-            <div class="qr-detected-container hidden mt-4">
-                <form method="POST" action="{{ route('scan.qr') }}">
-                    @csrf
-                    <h4 class="text-center text-xl font-bold mb-4">Student QR Detected!</h4>
-                    <input type="hidden" id="detected-qr-code" name="qr_number">
-                </form>
-            </div>
-
-            <div id="error-container" class="text-red-600 font-semibold hidden mt-4 py-4"></div>
-            <div id="success-container" class="text-green-600 font-semibold hidden mt-4"></div>
-        </div>
-
-        <!-- Attendee Table Section -->
-        <div class="col-span-2 shadow-md rounded-lg p-6 bg-white">
-            <h4 class="text-lg font-semibold mb-6">List of Participants</h4>
-            <div class="overflow-x-auto">
-                <table class="table-auto w-full text-center text-sm border-collapse border border-gray-300">
-                    <thead class="bg-gray-800 text-white">
-                        <tr>
-                            <th class="border border-gray-400 px-2 py-1">#</th>
-                            <th class="border border-gray-400 px-2 py-1">Full Name</th>
-                            <th class="border border-gray-400 px-2 py-1">Division</th>
-                            <th class="border border-gray-400 px-2 py-1">Time In</th>
-                            <th class="border border-gray-400 px-2 py-1">Category</th>
-                        </tr>
-                    </thead>
-                    <tbody id="attendanceTableBody" class="bg-white">
-                        @forelse ($attendances as $attendance)
-                            <tr class="border border-gray-300">
-                                <td class="px-2 py-1">{{ $attendances->total() - ($attendances->perPage() * ($attendances->currentPage() - 1)) - $loop->index }}</td>
-                                <td class="px-2 py-1">{{ $attendance->first_name }}  {{ $attendance->last_name }}</td>
-                                <td class="px-2 py-1">{{ $attendance->division }}</td>
-                                <td class="px-2 py-1">{{ $attendance->time_in }}</td>
-                                <td class="px-2 py-1">{{ $attendance->race_category }}</td>
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="px-2 py-1 text-center">No Records</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
-            </div>
-            <div class="mt-4">
-                {{ $attendances->links() }}
+            <div class="bg-dswd-blue rounded-[2rem] p-6 text-white shadow-lg relative overflow-hidden">
+                <p class="text-xs font-bold opacity-80 uppercase tracking-widest">Total Checked-In</p>
+                <p id="total-count" class="text-4xl font-black mt-1">{{ $attendances->total() }}</p>
+                <div class="absolute -right-4 -bottom-4 opacity-10">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4f/DSWD_Logo.png" class="w-32 grayscale invert">
+                     <img src="{{ asset('storage/images/dark_dromic.png') }}" alt="Logo" class="attendance-logo">
+                </div>
             </div>
         </div>
-    </div>
-</div>
 
-<audio id="scanSound" src="storage/sounds/beep.mp3"></audio>
+        <div class="lg:col-span-8">
+            <div class="bg-white rounded-[2rem] shadow-xl overflow-hidden h-full flex flex-col table-container">
+                <div class="p-6 bg-slate-50/50 border-b border-slate-100">
+                    <h3 class="font-black text-slate-800 uppercase tracking-tight">Attendee</h3>
+                </div>
 
-<!-- HTML5 QR Code Library -->
-<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+                <div class="overflow-x-auto flex-grow">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 border-b border-slate-100">
+                            <tr class="text-[10px] font-black text-slate-400 uppercase tracking-widest">
+                                <th class="px-6 py-4">Name</th>
+                                <th class="px-6 py-4">Division</th>
+                                <th class="px-6 py-4">Time</th>
+                                <th class="px-6 py-4 text-center">Category</th>
+                            </tr>
+                        </thead>
+                        <tbody id="attendanceTableBody" class="divide-y divide-slate-50">
+                            @foreach ($attendances as $attendance)
+                            <tr class="hover:bg-blue-50/30 transition-colors">
+                                <td class="px-6 py-5">
+                                    <div class="font-bold text-slate-800">{{ $attendance->first_name }} {{ $attendance->last_name }}</div>
+                                </td>
+                                <td class="px-6 py-5 text-xs text-slate-600 font-medium">{{ $attendance->division }}</td>
+                                <td class="px-6 py-5 font-mono text-xs text-dswd-blue font-black">{{ $attendance->time_in }}</td>
+                                <td class="px-6 py-5 text-center">
+                                    <span class="text-[9px] font-bold text-slate-400 uppercase">{{ $attendance->race_category }}</span>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="p-4 border-t border-slate-100" id="pagination-links">
+                    {{ $attendances->links() }}
+                </div>
+            </div>
+        </div>
+    </main>
+    <footer class="bg-white border-t-2 border-slate-200 px-8 py-6 text-center mt-auto">
+            <div class="max-w-7xl mx-auto">
+                <p class="text-xs font-bold text-slate-700 leading-relaxed uppercase tracking-wider">
+                    <span class="text-dswd-blue">Department of Social Welfare and Development Field Office 3</span><br>
+                    <span class="text-slate-500 font-semibold uppercase">Government Center, Maimpis, City of San Fernando, Pampanga, 2000, Philippines</span><br>
 
-<script>
-    let isScanning = false;       // Lock
-    let lastScanned = "";        // Last QR
-    let scanCooldown = 2000;     // 2 seconds cooldown
+                    <span class="text-[10px] text-slate-400 mt-3 flex items-center justify-center gap-1 italic uppercase">
+                        © 2026 •
+                        <img src="{{ asset('storage/images/dromic_logo-w.png') }}" alt="DRIMS Logo" class="attendance-logo">
+                        Powered by DRIMS
+                    </span>
+                </p>
+            </div>
+     </footer>
 
-    function addAttendanceRow(attendance) {
-        const tbody = document.querySelector("#attendanceTableBody");
-        const row = document.createElement("tr");
+    <canvas id="qrCaptureCanvas" class="hidden"></canvas>
+    <audio id="scanSound" src="{{ asset('storage/sounds/beep.mp3') }}"></audio>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
-        row.innerHTML = `
-            <td class="px-2 py-1">${attendance.id}</td>
-            <td class="px-2 py-1">${attendance.first_name || " " || attendance.last_name || " " || attendance.ext}</td>
-            <td class="px-2 py-1">${attendance.division}</td>
-            <td class="px-2 py-1">${attendance.time_in || ""}</td>
-            <td class="px-2 py-1">${attendance.race_category}</td>
-        `;
+    <script>
+        // Clock
+        function updateClock() {
+            const now = new Date();
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            document.getElementById('date-display').innerText = now.toLocaleDateString('en-PH', dateOptions);
+            document.getElementById('time-display').innerText = now.toLocaleTimeString('en-PH');
+        }
+        setInterval(updateClock, 1000);
+        updateClock();
 
-        tbody.prepend(row);
-    }
+        let isScanning = false;
 
+        function refreshTable() {
+            fetch("{{ route('attendances.list') }}")
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('total-count').innerText = data.attendances.total;
+                    const tbody = document.querySelector("#attendanceTableBody");
+                    tbody.innerHTML = "";
+                    data.attendances.data.forEach(attendance => {
+                        const row = document.createElement("tr");
+                        row.className = "hover:bg-blue-50/30 transition-colors";
+                        row.innerHTML = `
+                            <td class="px-6 py-5">
+                                <div class="font-bold text-slate-800">${attendance.first_name} ${attendance.last_name}</div>
+                                <div class="text-[9px] font-bold text-slate-400 uppercase">${attendance.race_category}</div>
+                            </td>
+                            <td class="px-6 py-5 text-xs text-slate-600 font-medium">${attendance.division}</td>
+                            <td class="px-6 py-5 font-mono text-xs text-dswd-blue font-black">${attendance.time_in || ''}</td>
+                            <td class="px-6 py-5 text-center"><span class="inline-block w-2 h-2 bg-green-500 rounded-full"></span></td>
+                        `;
+                        tbody.appendChild(row);
+                    });
+                });
+        }
 
-    function refreshTable() {
-        fetch("{{ route('attendances.list') }}")
+        function onScanSuccess(decodedText) {
+            if (isScanning) return;
+            isScanning = true;
+
+            const scanSound = document.getElementById('scanSound');
+            const successBox = document.getElementById('success-container');
+            const errorBox = document.getElementById('error-container');
+
+            scanSound.play().catch(() => {});
+
+            const video = document.querySelector("#interactive video");
+            const canvas = document.getElementById("qrCaptureCanvas");
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const formData = new FormData();
+            formData.append('qr_number', decodedText);
+            formData.append('imageCapture', canvas.toDataURL("image/png"));
+
+            fetch("{{ route('scan.qr') }}", {
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
+                body: formData
+            })
             .then(res => res.json())
             .then(data => {
-
-                const tbody = document.querySelector("#attendanceTableBody");
-                tbody.innerHTML = "";
-
-                data.attendances.data.forEach(addAttendanceRow);
-
-                document.querySelector(".mt-4").innerHTML =
-                    data.attendances.links;
-
-            })
-            .catch(console.error);
-    }
-
-
- function startScanner() {
-    const errorBox = document.getElementById('error-container');
-    const successBox = document.getElementById('success-container');
-    const scanSound = document.getElementById('scanSound');
-
-    const onScanSuccess = (decodedText) => {
-        if (isScanning) return;
-
-        isScanning = true;
-        const currentScan = decodedText;
-
-        scanSound.play();
-        errorBox.classList.add('hidden');
-        successBox.classList.add('hidden');
-
-         // Capture the video frame
-        const video = document.querySelector("#interactive video");
-        const canvas = document.getElementById("qrCaptureCanvas");
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        const context = canvas.getContext("2d");
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        // Convert to base64 image (PNG)
-        const imageData = canvas.toDataURL("image/png"); // "data:image/png;base64,..."
-
-        const formData = new FormData();
-        formData.append('qr_number', currentScan);
-        formData.append('imageCapture', imageData);
-
-
-        fetch("{{ route('scan.qr') }}", {
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content },
-            body: formData
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.error) {
-                errorBox.classList.remove('hidden');
-                errorBox.innerHTML = data.error;
-                setTimeout(() => { errorBox.classList.add('hidden'); }, 3000);
-            } else {
-                successBox.classList.remove('hidden');
-                successBox.innerHTML = data.message;
-                refreshTable();
-                setTimeout(() => { successBox.classList.add('hidden'); }, 3000);
-            }
-            isScanning = false; // unlock for next scan
-        })
-        .catch(err => {
-            console.error(err);
-            errorBox.classList.remove('hidden');
-            errorBox.innerHTML = "Network error";
-            setTimeout(() => { errorBox.classList.add('hidden'); }, 3000);
-            isScanning = false;
-        });
-    };
-
-    const config = { fps: 30, qrbox: 270 };
-
-    const scanner = new Html5Qrcode("interactive");
-
-    // ✅ Get available cameras and prefer rear camera
-    Html5Qrcode.getCameras().then(cameras => {
-        if (cameras && cameras.length) {
-            // Choose rear camera if possible
-            let cameraId = cameras[0].id; // fallback to first camera
-            for (let cam of cameras) {
-                if (cam.label.toLowerCase().includes('back') || cam.label.toLowerCase().includes('rear')) {
-                    cameraId = cam.id;
-                    break;
+                if (data.error) {
+                    errorBox.innerHTML = data.error;
+                    errorBox.classList.remove('hidden');
+                    setTimeout(() => errorBox.classList.add('hidden'), 3000);
+                } else {
+                    successBox.innerHTML = data.message;
+                    successBox.classList.remove('hidden');
+                    refreshTable();
+                    setTimeout(() => successBox.classList.add('hidden'), 3000);
                 }
-            }
-
-            scanner.start(cameraId, config, onScanSuccess)
-                .catch(err => {
-                    console.error(err);
-                    alert("Camera error: " + err);
-                });
-        } else {
-            alert("No camera found");
+                setTimeout(() => { isScanning = false; }, 2000);
+            })
+            .catch(() => { isScanning = false; });
         }
-    }).catch(err => {
-        console.error(err);
-        alert("Camera error: " + err);
-    });
-}
 
+        // Initialize Scanner with simplified config
+        const html5QrCode = new Html5Qrcode("interactive");
+        const config = { fps: 20, aspectRatio: 1.0 };
 
-
-document.addEventListener('DOMContentLoaded', startScanner);
-
-
-function captureImage() {
-    const video = document.querySelector("#interactive video");
-    const canvas = document.createElement("qrCaptureCanvas");
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    canvas.getContext("2d").drawImage(video, 0, 0, canvas.width, canvas.height);
-
-    // Get base64 string
-    const imageBase64 = canvas.toDataURL("image/png"); // data:image/png;base64,...
-    return imageBase64;
-}
-
-</script>
-
+        Html5Qrcode.getCameras().then(cameras => {
+            if (cameras && cameras.length) {
+                // Try rear camera first
+                const backCamera = cameras.find(c => c.label.toLowerCase().includes('back') || c.label.toLowerCase().includes('rear'));
+                const cameraId = backCamera ? backCamera.id : cameras[0].id;
+                html5QrCode.start(cameraId, config, onScanSuccess);
+            }
+        });
+    </script>
 </body>
 </html>

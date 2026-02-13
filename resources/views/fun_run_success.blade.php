@@ -29,9 +29,11 @@
              {!! str_replace('<svg ', '<svg width="800"', $qrSvg) !!}
         </div>
     <p>Please keep your QR code secured and present it on the day of the event.</p>
-    <p>Participants are required to: Prepare their own <b>Personnel Locator Slip (PLS)</b> or <b>Request<br> for Authority  to Travel (RFA)</b> documents. Accomplish and sign a <b>Health Consent Form</b>.<br> Proper running attire and hydration are advised. </i></p>
+    <p></p>
+    <p><a href="{{ route('fun-run.download-mechanic') }}" target="_blank" class="privacy-link text-blue-800 underline cursor-pointer hover:opacity-80">You may download the Mechanics here</a></p>
+    <p>Participants are required to: Prepare their own <b>Personnel Locator Slip (PLS)</b> or <b>Request<br> for Authority  to Travel (RFA)</b> and <b>Regional Special Order</b> documents. Accomplish and sign a <b>Health Consent Form</b>.<br> Proper running attire and hydration are advised. </i></p>
 
-    <div style="margin-top: 100px; display: flex; gap: 20px; text-align: center; grid-column: span 3;">
+    <div style="margin-top: 5px; display: flex; gap: 20px; text-align: center; grid-column: span 3;">
         <a href="{{ route('fun-run.create') }}" class="btn-submit">Register Another Participant</a>
          <a href="{{ route('fun-run.print-image') }}" target="_blank" class="btn-submit">Download QR Code</a>
     </div>

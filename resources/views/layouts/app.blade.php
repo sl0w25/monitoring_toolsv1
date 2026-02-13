@@ -57,14 +57,32 @@
 
 
         /* Top Government Bar */
-        .gov-bar {
-            background: #222;
-            color: white;
-            padding: 8px 10%;
-            font-size: 11px;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
+.gov-bar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #222;
+    color: white;
+    padding: 8px 10%;
+    font-size: 11px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+.gov-bar .attendance-link {
+    display: flex;
+    align-items: center;
+    gap: 5px;           /* space between logo and text */
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.gov-bar .attendance-logo {
+    width: 40px;        /* set desired width */
+    height: auto;       /* keep aspect ratio */
+}
+
 
         /* Hero Section */
         header {
@@ -82,16 +100,16 @@
             .anniversary-logo {
                 width: 180px;
                 height: 180px;
-                background: white;
+                /* background: white; */
                 border-radius: 50%;
                 margin: 0 auto 20px;
 
                 border: 4px solid var(--gold-solid);
 
                 /* Base Glow */
-                box-shadow:
-                    0 0 25px rgba(212, 175, 55, 0.5),
-                    0 0 45px rgba(212, 175, 55, 0.3);
+                filter: drop-shadow(0 0 12px rgba(212,175,55,0.6))
+        drop-shadow(0 0 28px rgba(212,175,55,0.4));
+
 
                 display: flex;
                 align-items: center;
@@ -108,24 +126,42 @@
             .anniversary-logo::before {
                 content: "";
                 position: absolute;
-                top: -50%;
-                left: -50%;
-
-                width: 200%;
-                height: 200%;
+                inset: -50%;
+                opacity: 0.7;
 
                 background: linear-gradient(
                     120deg,
-                    transparent 40%,
-                    rgba(255, 255, 255, 0.6) 50%,
+                    transparent 35%,
+                    rgba(255,255,255,0.9) 45%,
+                    rgba(255,255,255,0.4) 50%,
                     transparent 60%
                 );
 
                 transform: rotate(0deg);
-                animation: shineRotate 5s linear infinite;
+                animation: shineSweep 4s linear infinite;
 
                 pointer-events: none;
             }
+
+            /* Diamond Sparkle Layer */
+            .anniversary-logo::after {
+                content: "";
+                position: absolute;
+                inset: 0;
+
+                background:
+                    radial-gradient(circle at 20% 30%, rgba(255,255,255,0.8), transparent 40%),
+                    radial-gradient(circle at 70% 60%, rgba(255,255,255,0.6), transparent 45%),
+                    radial-gradient(circle at 40% 80%, rgba(255,255,255,0.5), transparent 50%);
+
+                mix-blend-mode: screen;
+                opacity: 0.2;
+
+                animation: sparkleMove 3s ease-in-out infinite;
+
+                pointer-events: none;
+            }
+
 
             /* Glow Pulse Animation */
             @keyframes glowPulse {
@@ -152,10 +188,100 @@
                 }
             }
 
-            .anniversary-logo:hover {
+            /* 3D Container */
+            .logo-3d {
+                width: 200px;
+                aspect-ratio: 1 / 1;
+
+                margin: auto;
+
+                perspective: 1000px; /* 3D depth */
+
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+
+            /* Image */
+            .logo-3d img {
+                width: 100%;
+                height: auto;
+
+                transform-style: preserve-3d;
+
+                animation: floatRotate 6s ease-in-out infinite;
+
+                filter: drop-shadow(0 15px 25px rgba(0,0,0,0.5));
+            }
+
+            /* Animation */
+            @keyframes floatRotate {
+                0% {
+                    transform:
+                        rotateX(0deg)
+                        rotateY(0deg)
+                        translateY(0px);
+                }
+
+                25% {
+                    transform:
+                        rotateX(12deg)
+                        rotateY(18deg)
+                        translateY(-8px);
+                }
+
+                50% {
+                    transform:
+                        rotateX(0deg)
+                        rotateY(36deg)
+                        translateY(-12px);
+                }
+
+                75% {
+                    transform:
+                        rotateX(-10deg)
+                        rotateY(18deg)
+                        translateY(-8px);
+                }
+
+                100% {
+                    transform:
+                        rotateX(0deg)
+                        rotateY(0deg)
+                        translateY(0px);
+                }
+            }
+
+
+            /* .anniversary-logo:hover {
                 animation-duration: 1.5s;
                 transform: scale(1.05);
+            } */
+
+            /* Light Sweep Motion */
+            @keyframes shineSweep {
+                0% {
+                    transform: translateX(-100%) rotate(25deg);
+                }
+
+                100% {
+                    transform: translateX(100%) rotate(25deg);
+                }
             }
+
+            /* Sparkle Movement */
+            @keyframes sparkleMove {
+                0%, 100% {
+                    opacity: 0.4;
+                    transform: scale(1);
+                }
+
+                50% {
+                    opacity: 0.9;
+                    transform: scale(1.05);
+                }
+            }
+
 
 
 
@@ -488,6 +614,24 @@
     }
 }
 
+        .map-crop {
+            width: 100%;
+            height: 450px;      /* Visible area (crop height) */
+            overflow: hidden;  /* Hides excess */
+            position: relative;
+            border-radius: 12px; /* Optional */
+        }
+
+        .map-crop iframe {
+            width: 100%;
+            height: 500px;     /* Bigger than container */
+            border: 0;
+
+            /* Move iframe up/down/left/right */
+            transform: translateY(-80px);
+        }
+
+
 
 
 
@@ -550,18 +694,26 @@
     }
 
 
-
-
     </style>
 
     @yield('styles')
 </head>
 <body>
 
-    <div class="gov-bar">Department of Social Welfare and Development Field Office III</div>
+<div class="gov-bar">
+    <span class="gov-text">Department of Social Welfare and Development Field Office 3</span>
+    <a href="/attendance" class="attendance-link">
+        <img src="{{ asset('storage/images/dark_dromic.png') }}" alt="Logo" class="attendance-logo">
+        POWERED BY DRIMS
+    </a>
+</div>
+
+
+
+
 
     <header class="animated-header">
-        <div class="anniversary-logo fade-in">
+        <div class="logo-3d fade-in">
             @yield('header-logo')
         </div>
 
@@ -580,33 +732,10 @@
     </div>
 
     <footer>
-        <p><strong>DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT FIELD OFFICE III</strong><br>
+        <p><strong>DEPARTMENT OF SOCIAL WELFARE AND DEVELOPMENT FIELD OFFICE 3</strong><br>
         Government Center, Maimpis, City of San Fernando, Pampanga, 2000, Philippines<br>
-        © 2026 POWERED BY DRIMS</p>
+        © 2026</p>
     </footer>
-
-    @yield('scripts')
-    <!-- LOADING SCREEN -->
-    <div id="loadingScreen" style="
-        display:none;
-        position:fixed;
-        top:0; left:0;
-        width:100%;
-        height:100%;
-        background:rgba(255,255,255,0.9);
-        z-index:10000;
-        justify-content:center;
-        align-items:center;
-        flex-direction:column;
-        font-family: Arial, sans-serif;
-    ">
-
-        <div class="loader"></div>
-        <p style="margin-top:15px;font-weight:bold;color:#003366;">
-            Processing your registration...
-        </p>
-
-    </div>
-
 </body>
+
 </html>

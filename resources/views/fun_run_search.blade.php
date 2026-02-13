@@ -36,15 +36,60 @@
             <p><strong>Name:</strong> {{ $registration->first_name }} {{ $registration->last_name }}</p>
             <p><strong>DSWD ID:</strong> {{ $registration->dswd_id }}</p>
 
+<div class="qr-wrapper">
+    <a href="{{ route('fun-run.print-image', $registration->id) }}" target="_blank" class="qr-link">
 
-            <div style="margin: 15px 0;">
-                <a href="{{ route('fun-run.print-image', $registration->id) }}" target="_blank" style="text-decoration: none;">{!! QrCode::size(200)->generate($registration->qr_number) !!}</a>
-            </div>
+        <!-- QR CODE -->
+        {!! QrCode::size(200)->generate($registration->qr_number) !!}
+
+        <!-- DOWNLOAD ICON -->
+        <span class="download-icon">⬇️</span>
+    </a>
+</div>
 
 
-            {{-- <a href="{{ route('fun-run.print-image', $registration->id) }}" target="_blank" style="text-decoration: none;" class="btn-submit">Download QR Code</a> --}}
 
         </div>
     @endif
 </section>
+<style>
+.qr-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.qr-link {
+    position: relative;
+    display: inline-block;
+}
+
+.download-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    font-size: 40px;
+    color: white;
+    background: rgba(0,0,0,0.6);
+    padding: 12px 16px;
+    border-radius: 50%;
+
+    opacity: 0;
+    transition: opacity 0.3s ease;
+
+    pointer-events: none;
+}
+
+/* Show icon on hover */
+.qr-link:hover .download-icon {
+    opacity: 1;
+}
+
+/* Optional zoom effect */
+.qr-link:hover svg {
+    filter: brightness(0.6);
+}
+</style>
+
 @endsection

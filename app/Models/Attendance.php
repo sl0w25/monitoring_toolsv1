@@ -19,7 +19,7 @@ class Attendance extends Model
         'qr_number',
         'time_in',
         'race_category',
-        'image'
+        'image',
 
     ];
 

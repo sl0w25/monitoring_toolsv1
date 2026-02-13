@@ -62,6 +62,11 @@ class ClassificationForm extends Page
     //     return ($user && ($user->isAdmin() || !$user->isLgu())) ? true : false;
     // }
 
+        public static function canAccess(): bool
+    {
+        return false; //Auth::user()?->isAdmin(); // Adjust as needed
+    }
+
 
 
     // public function boot()

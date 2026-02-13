@@ -44,27 +44,16 @@ class AttendanceForm extends Page implements HasTable
 
         ->columns([
             TextColumn::make('row_number')->label('No.'),
-            TextColumn::make('first_name')->label('First Name')->searchable(),
-            TextColumn::make('middle_name')->label('Middle Name')->searchable(),
-            TextColumn::make('last_name')->label('Last Name')->searchable(),
-            TextColumn::make('status')
-            ->label('Status')
-            ->getStateUsing(fn ($record) => match (true) {
-                $record->is_hired === 'hired' => 'Hired',
-                $record->w_listed === 'yes' => 'Waitlisted',
-                default => 'On Queue',
-            })
-            ->color(fn ($state) => match ($state) {
-                'Hired' => 'success',
-                'Waitlisted' => 'warning',
-                'On Queue' => 'danger',
-            })
-            ->tooltip(fn ($record) => match (true) {
-                $record->is_hired === 'hired' => 'This beneficiary is officially hired.',
-                $record->w_listed === 'yes' => 'This beneficiary is on the waiting list.',
-                default => 'This beneficiary is on queue.',
-            })
-            ->searchable(),
+            TextColumn::make('full_name')
+                ->label('Full Name')
+                ->getStateUsing(function ($record) {
+                    $middle = $record->middle_name ? ' ' . $record->middle_name : '';
+                    return "{$record->first_name}{$middle} {$record->last_name}";
+                })
+                ->searchable(['first_name', 'middle_name', 'last_name']),
+            TextColumn::make('division')->label('Division')->searchable(),
+            TextColumn::make('race_category')->label('Category'),
+            TextColumn::make('time_in')->label('Time In'),
             ImageColumn::make('image')
             ->label('MOVs')
             ->getStateUsing(fn ($record) => $record->image ? asset("storage/{$record->image}") : null)
@@ -73,3 +62,42 @@ class AttendanceForm extends Page implements HasTable
         ]);
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            // TextColumn::make('status')
+            // ->label('Status')
+            // ->getStateUsing(fn ($record) => match (true) {
+            //     $record->is_hired === 'hired' => 'Hired',
+            //     $record->w_listed === 'yes' => 'Waitlisted',
+            //     default => 'On Queue',
+            // })
+            // ->color(fn ($state) => match ($state) {
+            //     'Hired' => 'success',
+            //     'Waitlisted' => 'warning',
+            //     'On Queue' => 'danger',
+            // })
+            // ->tooltip(fn ($record) => match (true) {
+            //     $record->is_hired === 'hired' => 'This beneficiary is officially hired.',
+            //     $record->w_listed === 'yes' => 'This beneficiary is on the waiting list.',
+            //     default => 'This beneficiary is on queue.',
+            // })
+            // ->searchable(),
